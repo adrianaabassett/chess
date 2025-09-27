@@ -166,7 +166,7 @@ public class ChessGame {
         }
 
 
-        ChessBoard tempBoard = new ChessBoard(copy.board);
+        //ChessBoard tempBoard = new ChessBoard(copy.board);
         //maybe need a deep copy of this
         int row = 1;
         int col = 1;
@@ -253,7 +253,22 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
+        int ro =1;
+        while(ro<9){
+
+        }
         this.board = board;
+    }
+
+    public ChessBoard copyBoard(ChessBoard source, ChessBoard copyboard){
+        int row = 1;
+        int col = 1;
+        while(row<9){
+            while (col<9){
+                
+            }
+        }
+        return copyboard;
     }
 
     /**
@@ -262,6 +277,7 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
+
         return board;
     }
 
@@ -276,6 +292,7 @@ public class ChessGame {
 
     @Override
     public int hashCode() {
+
         return Objects.hash(teamTurn, board);
     }
 }

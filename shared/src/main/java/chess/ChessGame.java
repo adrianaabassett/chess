@@ -53,9 +53,16 @@ public class ChessGame {
     //basically removes all king pieces that would put it in check
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        if(board.getPiece(startPosition) !=null){
-            return board.getPiece(startPosition).pieceMoves(board,startPosition);
+        if(board.getPiece(startPosition) ==null){
+           return null;
         }
+        ChessBoard testingMoves = new ChessBoard();
+        for(ChessMove current:board.getPiece(startPosition).pieceMoves(board,startPosition)){
+            testingMoves = copyBoard(board);
+            makeMove(current);
+        }
+
+        board.getPiece(startPosition).pieceMoves(board,startPosition);
         return moves;
     }
 
@@ -170,11 +177,15 @@ public class ChessGame {
         //maybe need a deep copy of this
         int row = 1;
         int col = 1;
-        boolean shouldreturnfalse = false;
         Collection<ChessMove> movesForFake;
         while(row<9){
             while(col<9){
-
+                ChessPosition pos = new ChessPosition(row, col);
+                //checks theres something there, is the same teamcolor, that has valid moves that wont put it in check,
+                if(board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == teamColor && validMoves(pos)!=null){
+                    //then return false
+                    return false;
+                }
 //                ChessPiece checkForMove = tempBoard.getPiece(new ChessPosition(row,col));
 //                if (checkForMove != null){
 //                    if (checkForMove.getTeamColor() == teamColor){
@@ -214,7 +225,7 @@ public class ChessGame {
             return false;
         }
         //is it in check
-
+        //check for any valid moves
         if(getTeamTurn() != teamColor){
             return false;
         }

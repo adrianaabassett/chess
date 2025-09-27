@@ -174,34 +174,28 @@ public class ChessGame {
         Collection<ChessMove> movesForFake;
         while(row<9){
             while(col<9){
-                ChessPiece checkForMove = tempBoard.getPiece(new ChessPosition(row,col));
-                if (checkForMove != null){
-                    if (checkForMove.getTeamColor() == teamColor){
-                        movesForFake = board.getPiece(new ChessPosition(row,col)).pieceMoves(board, new ChessPosition(row,col));
-                        for(ChessMove currentFake : movesForFake){
-                            makeMove(currentFake);
-                            if(isInCheck(teamColor)){
-                                shouldreturnfalse = true;
-                            }
-                            setBoard(tempBoard);
-                        }
-                        if(shouldreturnfalse){
-                            return false;
-                        }
-                    }
-                }
+
+//                ChessPiece checkForMove = tempBoard.getPiece(new ChessPosition(row,col));
+//                if (checkForMove != null){
+//                    if (checkForMove.getTeamColor() == teamColor){
+//                        movesForFake = board.getPiece(new ChessPosition(row,col)).pieceMoves(board, new ChessPosition(row,col));
+//                        for(ChessMove currentFake : movesForFake){
+//                            makeMove(currentFake);
+//                            if(isInCheck(teamColor)){
+//                                shouldreturnfalse = true;
+//                            }
+//                            setBoard(tempBoard);
+//                        }
+//                        if(shouldreturnfalse){
+//                            return false;
+//                        }
+//                    }
+//                }
                 col++;
             }
             col =1;
             row++;
         }
-
-
-
-
-
-
-
 
         return true;
         //one good excuse for mistakes is the navahoo tradition of leaving mistakes in everything
@@ -260,13 +254,17 @@ public class ChessGame {
         this.board = board;
     }
 
-    public ChessBoard copyBoard(ChessBoard source, ChessBoard copyboard){
+    public ChessBoard copyBoard(ChessBoard source){
+        ChessBoard copyboard = new ChessBoard();
         int row = 1;
         int col = 1;
         while(row<9){
             while (col<9){
-                
+               copyboard.addPiece(new ChessPosition(row,col), source.getPiece(new ChessPosition(row,col)));
+                col++;
             }
+            col =1;
+            row++;
         }
         return copyboard;
     }
@@ -277,7 +275,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-
         return board;
     }
 

@@ -69,7 +69,12 @@ public class ChessGame {
         //make the move
         for(ChessMove current:board.getPiece(startPosition).pieceMoves(board,startPosition)){
             board = copyBoard(savingBoard);
-            makeMove(current);
+            try {
+                makeMove(current);
+            }
+            catch(InvalidMoveException wrongm){
+
+            }
             if(!isInCheck(ourColor)){
                 moves.add(current);
             }
@@ -87,15 +92,15 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        try{
+        //try{
         board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
         board.addPiece(move.getStartPosition(),null);
-        }
-        catch(
-            Exception WrongMove
-        ){
-            System.out.println("invalid move");
-        }
+        //}
+//        catch(
+//                InvalidMoveException
+//        ){
+//            System.out.println("invalid move");
+//        }
     }
 
 

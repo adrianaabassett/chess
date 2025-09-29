@@ -75,7 +75,7 @@ public class ChessGame {
             }
         }
 //        board.getPiece(startPosition).pieceMoves(board,startPosition);
-        // returning board to former state and returning moves
+//        returning board to former state and returning moves
         board = copyBoard(savingBoard);
         return moves;
     }
@@ -307,7 +307,6 @@ public class ChessGame {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(teamTurn, board);
     }
 }

@@ -69,12 +69,13 @@ public class ChessGame {
         //make the move
         for(ChessMove current:board.getPiece(startPosition).pieceMoves(board,startPosition)){
             board = copyBoard(savingBoard);
-            try {
-                makeMove(current);
-            }
-            catch(InvalidMoveException wrongm){
-
-            }
+            //try {
+                board.addPiece(current.getEndPosition(),board.getPiece(startPosition));
+                board.addPiece(startPosition,null);
+           // }
+            //catch(InvalidMoveException wrongm){
+                //you cant do this move
+            //}
             if(!isInCheck(ourColor)){
                 moves.add(current);
             }
@@ -92,15 +93,59 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        //try{
-        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-        board.addPiece(move.getStartPosition(),null);
-        //}
-//        catch(
-//                InvalidMoveException
-//        ){
-//            System.out.println("invalid move");
-//        }
+        //this is permanent dont use it in valid
+        //in check no piece take own piec
+//        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+//        board.addPiece(move.getStartPosition(),null);
+        if(move.getStartPosition() == null ||
+                move.getEndPosition().getRow()>8||
+                move.getEndPosition().getRow()<1||
+                move.getEndPosition().getColumn()<1||
+                move.getEndPosition().getColumn()>8||
+                board.getPiece(move.getStartPosition()) == null ){
+            throw new InvalidMoveException("you can't make this move off the board");}
+        else{
+            //if move is in all the valid moves
+            boolean inList = false;
+            for (ChessMove current:validMoves(move.getStartPosition())){
+                if(current.equals(move)){
+                    inList = true;
+                }
+            }
+            if(!inList){
+                throw new InvalidMoveException("not a valid move");
+            }
+            //inlist now describes whether it is in the list of valid moves
+            if(inList && this.getTeamTurn() == board.getPiece(move.startPosition).getTeamColor()){
+            //now we can move it
+                if(move.getPromotionPiece() == null){
+                    board.addPiece(move.getEndPosition(),board.getPiece(move.getStartPosition()));
+                    board.addPiece(move.getStartPosition(),null);
+                }
+                else{
+                 board.addPiece(move.getStartPosition(),
+                         new ChessPiece(board.getPiece(move.getStartPosition()).getTeamColor(),move.getPromotionPiece()));
+                 board.addPiece(move.getStartPosition(),null);
+                }
+                //change team color?
+                if(this.getTeamTurn() == TeamColor.WHITE){
+                    setTeamTurn(TeamColor.BLACK);
+                }
+                else{
+                    setTeamTurn(TeamColor.WHITE);
+                }
+            }
+            else
+            {
+                throw new InvalidMoveException("Are you sure its your turn");
+            }
+
+
+        //call makemoves in validmoves
+
+        }
+
+
     }
 
 
@@ -188,6 +233,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         if (!isInCheck(teamColor)){
             return false;
+            //no valid moves and its not in check then its a stalemate
         }
         //check if it can move away
         ChessPosition kingPosition = whereKing(teamColor);
@@ -264,12 +310,11 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        ChessBoard copyboard = new ChessBoard();
         int row = 1;
         int col = 1;
         while(row<9){
             while (col<9){
-                copyboard.addPiece(new ChessPosition(row,col), board.getPiece(new ChessPosition(row,col)));
+                this.board.addPiece(new ChessPosition(row,col), board.getPiece(new ChessPosition(row,col)));
                 col++;
             }
             col =1;

@@ -123,7 +123,7 @@ public class ChessGame {
                     board.addPiece(move.getStartPosition(),null);
                 }
                 else{
-                 board.addPiece(move.getStartPosition(),
+                 board.addPiece(move.getEndPosition(),
                          new ChessPiece(board.getPiece(move.getStartPosition()).getTeamColor(),move.getPromotionPiece()));
                  board.addPiece(move.getStartPosition(),null);
                 }

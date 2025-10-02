@@ -216,55 +216,29 @@ public class ChessGame {
      */
 
 
-    //if something something else can capture offender
-    //to block check
-    //put it through valid moves.
-    //create new board
-    //in valid moves, call piecemoves, and then
-    //as i iterate i reset the board to the actual board each time
-    //this.name = knew String(copy.nametwo)
-    //var copy = new DeepCopy(source);
-    //make the move and revert the move
-    //theres a copy objects under the class github
-    // //create a new board where we move knight to all possible options and see
-    //if its in check for that color repeatedly
-    //return true or false.
-    //thiss witll check for both blocking and attacking
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)){
+        if (!isInCheck(teamColor)) {
             return false;
             //no valid moves and its not in check then its a stalemate
         }
-        //check if it can move away
-        ChessPosition kingPosition = whereKing(teamColor);
-        Collection<ChessMove> possibleMoves= board.getPiece(kingPosition).pieceMoves(board,kingPosition);
-        for(ChessMove current : possibleMoves){
-            if(!checkIfAttackable(teamColor, current.getEndPosition())){
-                return false;
-            }
-        }
-        //ChessBoard tempBoard = new ChessBoard(copy.board);
-        //maybe need a deep copy of this
         int row = 1;
         int col = 1;
-        //for every piece on the board that is our color, and has any moves that do not lead to being in check
         while(row<9){
             while(col<9){
-                ChessPosition pos = new ChessPosition(row, col);
-                //checks theres something there, is the same teamcolor, that has valid moves that wont put it in check,
-                if(board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == teamColor && validMoves(pos)!=null){
-                    //then return false
-                    return false;
+                if(board.getPiece(new ChessPosition(row, col)) != null){
+                    if(board.getPiece(new ChessPosition(row, col)).getTeamColor()==teamColor){
+                        if(validMoves( new ChessPosition(row, col)) != null  && !validMoves(new ChessPosition(row,col)).isEmpty()){
+                            return false;
+                        }
+                    }
                 }
                 col++;
             }
-            col =1;
+            col=1;
             row++;
         }
-
+        //do they not have any possible moves
         return true;
-        //one good excuse for mistakes is the navahoo tradition of leaving mistakes in everything
-        //players like to move fast, feel smart, and have things feel fair
     }
 
     /**
@@ -278,30 +252,25 @@ public class ChessGame {
         if(isInCheck(teamColor)){
             return false;
         }
-        //is it in check
-        //check for any valid moves
-        if(getTeamTurn() != teamColor){
-            return false;
-        }
-        //is it their turn
-
         int row = 1;
         int col = 1;
         while(row<9){
             while(col<9){
                 if(board.getPiece(new ChessPosition(row, col)) != null){
                     if(board.getPiece(new ChessPosition(row, col)).getTeamColor()==teamColor){
-                        if(board.getPiece(new ChessPosition(row, col)).pieceMoves(board,new ChessPosition(row,col))!=null){
+                        //
+                        if(validMoves( new ChessPosition(row, col)) !=null && !validMoves(new ChessPosition(row,col)).isEmpty()){
                             return false;
                         }
                     }
                 }
                 col++;
             }
+            col =1;
             row++;
         }
-        //do they have any possible moves
-        return false;
+        //do they not have any possible moves
+        return true;
     }
 
     /**

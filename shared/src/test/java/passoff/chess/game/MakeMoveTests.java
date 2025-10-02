@@ -12,7 +12,6 @@ import passoff.chess.TestUtilities;
 public class MakeMoveTests {
     private static final String WRONG_BOARD = "Board not correct after move made";
     private ChessGame game;
-
     @BeforeEach
     public void setUp() {
         game = new ChessGame();
@@ -349,7 +348,6 @@ public class MakeMoveTests {
         String noPieceAtEnd = "After move, no piece found at the end position";
         String incorrectType = "Found piece at end position is not the correct piece type";
         String incorrectColor = "Found piece at end position is the wrong team color";
-
         game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | |P| | | | | |

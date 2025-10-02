@@ -143,7 +143,6 @@ public class GameStatusTests {
                 |K| | | | | | | |
                 """));
         game.setTeamTurn(ChessGame.TeamColor.BLACK);
-
         Assertions.assertFalse(game.isInCheckmate(ChessGame.TeamColor.BLACK), INCORRECT_BLACK_CHECKMATE);
         Assertions.assertFalse(game.isInCheckmate(ChessGame.TeamColor.WHITE), INCORRECT_WHITE_CHECKMATE);
     }

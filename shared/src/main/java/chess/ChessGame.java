@@ -14,6 +14,7 @@ import java.util.Objects;
 public class ChessGame {
     TeamColor teamTurn = TeamColor.WHITE;
     ChessBoard board = new ChessBoard();
+    boolean isPassantNext = true;
     public ChessGame() {
         board.resetBoard();
     }
@@ -76,9 +77,37 @@ public class ChessGame {
             //catch(InvalidMoveException wrongm){
                 //you cant do this move
             //}
-            if(!isInCheck(ourColor)){
-                moves.add(current);
+            //en passant possible next turn if row +-2
+            //if its a pawn
+            if( board.getPiece(startPosition) != null && board.getPiece(startPosition).getPieceType() == ChessPiece.PieceType.PAWN){
+                //en passant possible next turn if row +-2
+                if(startPosition.getRow() -2 == current.getEndPosition().getRow()||startPosition.getRow() +2 == current.getEndPosition().getRow() ){
+                    isPassantNext = true;
+                }
+                else{isPassantNext = false;}
+                //if its making a diagonal move then it must go left or right
+                if(startPosition.getColumn() +1 == current.getEndPosition().getColumn() ||startPosition.getColumn() -1 == current.getEndPosition().getColumn()){
+                    if(board.getPiece(current.getEndPosition())== null && isPassantNext){
+                        moves.add(current);
+                    }
+                }
+                //AND its going diagonally AND its an en passant move because its not landing on a piecee where end position is
+                // AND its an en passant turn
             }
+            else if(!isInCheck(ourColor)){
+                //making sure it's not attempting a passant
+                if(board.getPiece(startPosition) != null) {
+                    if(board.getPiece(startPosition).getPieceType()!= ChessPiece.PieceType.PAWN || startPosition.getColumn() == current.getEndPosition().getColumn()) {
+                        moves.add(current);
+                    }
+                }
+                else{
+                    moves.add(current);
+                }
+                isPassantNext = false;
+            }
+            else{
+                isPassantNext = false;}
         }
 //        board.getPiece(startPosition).pieceMoves(board,startPosition);
 //        returning board to former state and returning moves
@@ -116,8 +145,44 @@ public class ChessGame {
                 throw new InvalidMoveException("not a valid move");
             }
             //inlist now describes whether it is in the list of valid moves
-            if(inList && this.getTeamTurn() == board.getPiece(move.startPosition).getTeamColor()){
+            if(inList && this.getTeamTurn() == board.getPiece(move.getStartPosition()).getTeamColor()){
             //now we can move it
+                //en passant
+                if(board.getPiece(move.getStartPosition()).getPieceType()==ChessPiece.PieceType.PAWN){
+                    int row = move.getStartPosition().getRow();
+                    int col = move.getStartPosition().getColumn();
+                    int erow = move.getEndPosition().getRow();
+                    int ecol= move.getEndPosition().getColumn();
+                    if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE ){
+                        //checks it moves up positive
+                        if(row == 5 && row +1 == erow){
+                            //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
+                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.BLACK){
+                                //removes the piece its passing
+                                board.addPiece(new ChessPosition(row,col+1 ) ,null);
+                            }
+                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.BLACK){
+                                board.addPiece(new ChessPosition(row,col-1 ) ,null);
+                            }
+                        }
+
+                    }
+                    if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK ){
+                        //checks it moves up positive
+                        if(row == 4 && row -1 == erow){
+                            //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
+                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.WHITE){
+                                //removes the piece its passing
+                                board.addPiece(new ChessPosition(row,col+1 ) ,null);
+                            }
+                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.WHITE){
+                                board.addPiece(new ChessPosition(row,col-1 ) ,null);
+                            }
+                        }
+
+                    }
+                }
+                //end en passant
                 if(move.getPromotionPiece() == null){
                     board.addPiece(move.getEndPosition(),board.getPiece(move.getStartPosition()));
                     board.addPiece(move.getStartPosition(),null);
@@ -139,6 +204,8 @@ public class ChessGame {
             {
                 throw new InvalidMoveException("Are you sure its your turn");
             }
+            // if en passant
+
 
 
         //call makemoves in validmoves

@@ -68,6 +68,7 @@ public class ChessPiece {
         Collection<ChessMove> colle = new ArrayList<>();
 
         if (pieceType.equals(PieceType.PAWN) && pieceColor.equals(pieceColor.WHITE)){
+
             if(checkCANmove(board,row+1, col)){
                 if(row >= 7){
                     colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col), PieceType.QUEEN));
@@ -102,6 +103,14 @@ public class ChessPiece {
                 }
                 else{colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), null));
                 }
+            }
+            //en passant
+            if(checkFORenemy(board,row,col+1) && row == 5 && checkCANmove(board,row+1,col+1) && row<8 && col<8){
+                //unsure about the 5
+                colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), null));
+            }
+            if(checkFORenemy(board,row,col-1) && row == 5 && checkCANmove(board,row+1,col-1) && row<8 &&col>1){
+                colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col-1), null));
             }
         }
 
@@ -138,6 +147,14 @@ public class ChessPiece {
                 }
                 else{colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), null));
                 }
+            }
+            //en passant
+            if(checkFORenemy(board,row,col+1) && row == 4 && checkCANmove(board,row-1,col+1) && row > 1 && col < 8){
+                //unsure about the 5
+                colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), null));
+            }
+            if(checkFORenemy(board,row,col-1) && row == 4 && checkCANmove(board,row-1,col-1) && row>1 && col<8){
+                colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), null));
             }
         }
 

@@ -105,11 +105,11 @@ public class ChessPiece {
                 }
             }
             //en passant
-            if(checkFORenemy(board,row,col+1) && row == 5 && checkCANmove(board,row+1,col+1) && row<8 && col<8){
+            if(checkFORenemy(board,row,col+1) && row == 5 && checkCANmove(board,row+1,col+1)){
                 //unsure about the 5
                 colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), null));
             }
-            if(checkFORenemy(board,row,col-1) && row == 5 && checkCANmove(board,row+1,col-1) && row<8 &&col>1){
+            if(checkFORenemy(board,row,col-1) && row == 5 && checkCANmove(board,row+1,col-1) ){
                 colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col-1), null));
             }
         }
@@ -149,11 +149,11 @@ public class ChessPiece {
                 }
             }
             //en passant
-            if(checkFORenemy(board,row,col+1) && row == 4 && checkCANmove(board,row-1,col+1) && row > 1 && col < 8){
+            if(checkFORenemy(board,row,col+1) && row == 4 && checkCANmove(board,row-1,col+1) ){
                 //unsure about the 5
                 colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), null));
             }
-            if(checkFORenemy(board,row,col-1) && row == 4 && checkCANmove(board,row-1,col-1) && row>1 && col<8){
+            if(checkFORenemy(board,row,col-1) && row == 4 && checkCANmove(board,row-1,col-1) ){
                 colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), null));
             }
         }

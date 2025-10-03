@@ -55,7 +55,7 @@ public class ChessGame {
 
     //every possible move that doesnt leave it in check of whatever piece we give it
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        boolean doublejump = false;
+       // boolean doublejump = false;
         Collection<ChessMove> moves = new ArrayList<>();
         TeamColor ourColor = board.getPiece(startPosition).getTeamColor();
         //creating collection to return
@@ -71,33 +71,32 @@ public class ChessGame {
         //testing each possible move to make sure it wont put it in check
 
         for(ChessMove current: board.getPiece(startPosition).pieceMoves(board,startPosition)){
-            ChessPiece testingPiece =board.getPiece(startPosition);
             boolean JumpsIntoNull = board.getPiece(current.getEndPosition()) == null;
             board = copyBoard(savingBoard);
+            ChessPiece testingPiece =board.getPiece(startPosition);
             board.addPiece(current.getEndPosition(),board.getPiece(startPosition));
             board.addPiece(startPosition,null);
             //en passant possible next turn if row +-2
             //if its a pawn
             if( testingPiece != null && testingPiece.getPieceType() == ChessPiece.PieceType.PAWN){
                 //en passant possible next turn if row +-2
-                if(startPosition.getRow() -2 == current.getEndPosition().getRow()||startPosition.getRow() +2 == current.getEndPosition().getRow() ){
-                    doublejump = true;
-                }
+//                if(startPosition.getRow() -2 == current.getEndPosition().getRow()||startPosition.getRow() +2 == current.getEndPosition().getRow() ){
+//                    doublejump = true;
+//                }
                 //if its making a diagonal move then it must go left or right
-                if(current.getStartPosition().getColumn() +1 == current.getEndPosition().getColumn() ||current.getStartPosition().getColumn() -1 == current.getEndPosition().getColumn()){
+                if(startPosition.getColumn()+1 == current.getEndPosition().getColumn() ||  startPosition.getColumn() -1 == current.getEndPosition().getColumn()){
                     //where it jumps
                     //most likely change
                     if(JumpsIntoNull && isPassantNext){
                         moves.add(current);
                     }
-                    /// /aaaaaaaaaaa
+
                     else if (!JumpsIntoNull){
                         moves.add(current);
                     }
                 }
                 else{
                     moves.add(current);
-                    /// ////aaaaaaaaaaa
                 }
                 //AND its going diagonally AND its an en passant move because its not landing on a piecee where end position is
                 // AND its an en passant turn
@@ -121,9 +120,9 @@ public class ChessGame {
 //        returning board to former state and returning moves
         board = copyBoard(savingBoard);
 
-         if (doublejump)
-         {isPassantNext = true;}
-         else{isPassantNext = false;}
+//         if (doublejump)
+//         {isPassantNext = true;}
+//         else{isPassantNext = false;}
         return moves;
     }
 
@@ -138,6 +137,9 @@ public class ChessGame {
         //in check no piece take own piec
 //        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
 //        board.addPiece(move.getStartPosition(),null);
+        boolean doublejump = false;
+        if (move.getStartPosition().getRow() +2== move.getEndPosition().getRow() ||move.getStartPosition().getRow() -2 == move.getEndPosition().getRow() )
+        {doublejump = true;}
         if(move.getStartPosition() == null ||
                 move.getEndPosition().getRow()>8||
                 move.getEndPosition().getRow()<1||
@@ -217,7 +219,8 @@ public class ChessGame {
                 throw new InvalidMoveException("Are you sure its your turn");
             }
             // if en passant
-
+        if(doublejump){isPassantNext = true;}
+        else{isPassantNext = false;}
 
 
         //call makemoves in validmoves

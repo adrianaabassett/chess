@@ -111,11 +111,9 @@ public class ChessGame {
                 else{
                     moves.add(current);
                 }
-                //aaaisPassantNext = false;
+
             }
-            else{
-                //aaaisPassantNext = false;
-                }
+
         }
 //        returning board to former state and returning moves
         board = copyBoard(savingBoard);
@@ -253,7 +251,7 @@ public class ChessGame {
         while(row<9){
             while (col<9){
                 checkPiece = board.getPiece(new ChessPosition(row, col));
-                //recent change
+
                 if(checkPiece != null && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null&& checkPiece.getTeamColor()!=teamColor) {
                     //cycle through all possible moves of every piece;
                     Collection<ChessMove> possibleMoves= checkPiece.pieceMoves(board, new ChessPosition(row, col));

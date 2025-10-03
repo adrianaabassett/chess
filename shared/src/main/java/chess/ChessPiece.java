@@ -149,7 +149,7 @@ public class ChessPiece {
                 }
             }
             //en passant
-            if(checkFORenemy(board,row,col+1) && row == 4 && checkCANmove(board,row-1,col+1) ){
+            if(checkFORenemy(board,row,col+1) && board.getPiece(new ChessPosition(row, col+1)).getPieceType() == PieceType.PAWN && row == 4 && checkCANmove(board,row-1,col+1) ){
                 //unsure about the 5
                 colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), null));
             }

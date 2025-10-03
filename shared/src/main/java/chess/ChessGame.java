@@ -59,9 +59,9 @@ public class ChessGame {
         Collection<ChessMove> moves = new ArrayList<>();
         TeamColor ourColor = board.getPiece(startPosition).getTeamColor();
         //creating collection to return
-        if(board.getPiece(startPosition) ==null){
-           return null;
-        }
+//        if(board.getPiece(startPosition) ==null){
+//           return null;
+//        }
         //checking that there is a piece there
         ChessBoard savingBoard = new ChessBoard();
         savingBoard = copyBoard(board);
@@ -95,7 +95,7 @@ public class ChessGame {
                         moves.add(current);
                     }
                 }
-                else{
+                else if(!isInCheck(ourColor)){
                     moves.add(current);
                 }
                 //AND its going diagonally AND its an en passant move because its not landing on a piecee where end position is
@@ -253,7 +253,8 @@ public class ChessGame {
         while(row<9){
             while (col<9){
                 checkPiece = board.getPiece(new ChessPosition(row, col));
-                if(checkPiece != null && checkPiece.getTeamColor()!=teamColor) {
+                //recent change
+                if(checkPiece != null && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null&& checkPiece.getTeamColor()!=teamColor) {
                     //cycle through all possible moves of every piece;
                     Collection<ChessMove> possibleMoves= checkPiece.pieceMoves(board, new ChessPosition(row, col));
                     for(ChessMove current : possibleMoves){

@@ -1,8 +1,35 @@
 package dataaccess;
 import datamodel.*;
+import model.*;
+import DataAccessException.ResponseException;
 
-public interface DataAccess {
+
+import java.util.HashMap;
+
+public abstract interface DataAccess {
+    User getUser(String username) throws DataAccessException;
+    void createUser(User userData) throws DataAccessException;
+   // UserList listUsers() throws DataAccessException;
+    boolean checkUser(String username, String password) throws DataAccessException;
+    void deleteUser(String username) throws DataAccessException;
     void clear();
-    void createUser(UserData user);
-    Userdata getUser(String username);
+    //void deleteAllPets() throws DataAccessException;
+    //are all of these throwing errors?
+
+
+        ///gets  user by username
+        /// finds userdata by username
+        //returns userdata, nothing, or an error
+        //where do i create the database?
+
+    ///gets  user by username
+    /// finds userdata by username
+    //returns userdata, nothing, or an error
+
+
+    //adds userdata
+    //adds auth data
+    //void clear();
+    //void createUser(UserData user);
+    //Userdata getUser(String username);
 }

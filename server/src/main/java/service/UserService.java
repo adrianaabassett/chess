@@ -1,27 +1,59 @@
 package service;
-
 import jakarta.servlet.Registration;
 import model.AuthData;
 import model.User;
 import dataaccess.DataAccess;
-import datamodel.RegistrationResult;
-import datamodel.User;
+import dataaccess.DataAccessException;
+
+
+import java.util.Collection;
+
 
 public class UserService {
-    private DataAccess dataAccess;
+    private final DataAccess dataAccess;
     public UserService(DataAccess dataAccess){
         this.dataAccess=dataAccess;
 
     }
-    public RegistrationResult register(User user){
-        dataAccess.saveUser(user);
-        return new RegistrationResult(user.username(),"zyyz")
+    public User addUser(User user) throws DataAccessException{
+        //here add error for whether it is already in the database
+        return dataAccess.addUser(user);
+    }
+
+    public UserList listUsers() throws DataAccessException{
+        return dataAccess.listPets();
+    }
+
+    public User getUser(String username) throws DataAccessException{
+        validateUsername(username);
+        return dataAccess.getUser(username);
+    }
+
+    public void deleteUser(String username) throws DataAccessException{
+        validateUsername(username);
+        dataAccess.deleteUser(username);
+    }
+
+    public void deleteAllUsers() throws DataAccessException{
+        Collection<User> users = dataAccess.listUsers();
+        if(!users.isEmpty()){
+            dataAccess.deleteAllUsers();
+        }
+    }
+
+    private void validateUsername(String username) throws DataAccessException{
+        if(username <= 0){
+            throw new DataAccessException(DataAccessException.Code.ClientError, "Error:invalid username");
+        }
     }
 
 
+//    public RegistrationResult register(User user){
+//        dataAccess.saveUser(user);
+//        return new RegistrationResult(user.username(),"zyyz")
+//    }
 
-
-    public void register(User user){
+    //public void register(User user){
 
 
         //how to get auth token
@@ -32,19 +64,19 @@ public class UserService {
 //        public static String generateToken() {
 //            return UUID.randomUUID().toString();
 //        }
-    }
-    public void clear(){
-        dataAccess.clear();
-    }
-    public AuthData register(UserData user) throws Exception{
-        if(dataAccess.getUser(user.username())!=null){
-            throw new Exception("already exists");
-        }
-        dataAccess.createUser(user);
-        var authData = new AuthData(user.username(),generateAuthToken());
-
-        return authData;
-    }
+//    }
+//    public void clear(){
+//        dataAccess.clear();
+//    }
+//    public AuthData register(UserData user) throws Exception{
+//        if(dataAccess.getUser(user.username())!=null){
+//            throw new Exception("already exists");
+//        }
+//        dataAccess.createUser(user);
+//        var authData = new AuthData(user.username(),generateAuthToken());
+//
+//        return authData;
+//    }
 
 
     //handler passes in register(register request)

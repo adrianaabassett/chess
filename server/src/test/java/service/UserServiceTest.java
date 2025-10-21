@@ -1,13 +1,13 @@
 package service;
 
+import dataaccess.DataAccess;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import model.*;
+import dataaccess.DataAccessException;
 
 public class UserServiceTest {
-    @Test
-    void clear(){
 
-    }
     @Test
     void register() throws Exception{
         var user = new UserData("joe","j@j","j");
@@ -26,6 +26,11 @@ public class UserServiceTest {
     }
 
     @Test
-    void testRegister() {
+    void testRegister() throws DataAccessException {
+        void
+    }
+    @Test
+    void clear(){
+
     }
 }

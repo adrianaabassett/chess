@@ -1,12 +1,10 @@
 package service;
 
-import dataaccess.DataAccess;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import model.*;
 import dataaccess.DataAccessException;
 
-public class UserServiceTest {
+public class ServiceTest {
 
     @Test
     void register() throws Exception{
@@ -17,7 +15,7 @@ public class UserServiceTest {
 //        var service = new UserService();
 
         var da = new MemoryDataAccess();
-        var service = new UserService(da);
+        var service = new Service(da);
         AuthToken res = service.register(user);
         assertNotNull(res);
         assertEquals(res.username(), user.username());

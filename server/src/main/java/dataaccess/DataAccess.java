@@ -1,14 +1,9 @@
 package dataaccess;
-import datamodel.*;
 import model.*;
-import DataAccessException.ResponseException;
-
-
-import java.util.HashMap;
 
 public abstract interface DataAccess {
-    User getUser(String username) throws DataAccessException;
-    void createUser(User userData) throws DataAccessException;
+    UserData getUser(String username) throws DataAccessException;
+    void createUser(UserData userData) throws DataAccessException;
    // UserList listUsers() throws DataAccessException;
     boolean checkUser(String username, String password) throws DataAccessException;
     void deleteUser(String username) throws DataAccessException;

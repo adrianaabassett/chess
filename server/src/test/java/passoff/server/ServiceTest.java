@@ -2,11 +2,9 @@ package passoff.server;
 import dataaccess.MemoryDataAccess;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import service.UserService;
-import service.UserServiceTest;
-import model.User;
+import service.Service;
+import model.UserData;
 
 public class ServiceTest {
     @Test
@@ -14,8 +12,8 @@ public class ServiceTest {
     public void registerNormal(){
         var dataAccess = new MemoryDataAccess();
 
-                var userService = new UserService(dataAccess);
-        var res = userService.register(new User("cow","rat","john"));
+        var userService = new Service(dataAccess);
+        var res = userService.register(new UserData("cow","rat","john"));
         Assertions.assertNotNull(res);
     }
     //try to register a user without a password
@@ -25,8 +23,8 @@ public class ServiceTest {
     public void registerNormal(){
         var dataAccess = new MemoryDataAccess();
         //try to register user with a password
-        var userService = new UserService(dataAccess);
-        var res = userService.register(new User("cow","rat","john"));
+        var userService = new Service(dataAccess);
+        var res = userService.register(new UserData("cow","rat","john"));
         Assertions.assertNotNull(res);
     }
 

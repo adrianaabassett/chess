@@ -1,12 +1,14 @@
 package service;
+import dataaccess.MemoryDataAccess;
 import jakarta.servlet.Registration;
 import model.AuthData;
 import model.User;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
-
+import java.util.UUID;
 
 import java.util.Collection;
+import java.util.UUID;
 
 
 public class UserService {
@@ -14,6 +16,22 @@ public class UserService {
     public UserService(DataAccess dataAccess){
         this.dataAccess=dataAccess;
 
+    }
+    public static String generateRandomString(){
+        return UUID.randomUUID().toString();
+    }
+    public AuthData register(User user) throws DataAccessException{
+        MemoryDataAccess memDataAccess = new MemoryDataAccess();
+        if(memDataAccess.getUser(user.getUsername())==null){
+            String authToken = generateRandomString();
+            AuthData authdata = new AuthData(authToken,user.getUsername());
+            memDataAccess.createAuth(authdata);
+            return authdata;
+        }
+        else{
+            throw new DataAccessException("this username already exists");
+        }
+        return null;
     }
     public User addUser(User user) throws DataAccessException{
         //here add error for whether it is already in the database

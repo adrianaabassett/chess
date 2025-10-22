@@ -5,6 +5,8 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import io.javalin.http.Context;
+import model.AuthData;
+import model.UserData;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 import service.Service;
@@ -33,4 +35,17 @@ public class Handler {
             ctx.status(200);
 
     }
+
+    public void loginUser(Context ctx) throws DataAccessException{
+        UserData userData = new Gson().fromJson(ctx.body(),UserData.class);
+        AuthData authData = service.loginUser(userData);
+        ctx.status(200);
+    }
+
+    public void logoutUser(Context ctx) throws DataAccessException{
+           String authToken = ctx.header("Authorization");
+           service.logoutUser(authToken);
+           ctx.status(200);
+    }
+
     }

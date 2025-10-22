@@ -42,25 +42,39 @@ public class Service {
         }
     }
 
+    public AuthData loginUser(UserData userData) throws DataAccessException{
+        if(userData.username() == null|| userData.password()==null ||userData.email() == null || userDAO.getUser(userData.username())==null){
+            throw new DataAccessException("error: one of your information spots are blank");
+        }
+        else if (userDAO.getUser(userData.username()).password()!=userData.password()){
+            throw new DataAccessException("error: username and password are incorrect");
+        }
+        else{
+            String authToken = generateRandomString();
+            var authData = new AuthData(authToken, userData.username());
+            authDAO.createAuth(authData);
+            return authData;
+        }
+    }
+
+    public void logoutUser(String authToken) throws DataAccessException{
+        if(authDAO.getAuth(authToken)==null||authToken.isBlank()||authDAO.getAuth(authToken)==null){
+            throw new DataAccessException("Error:unable to log out due to invalid authtoken");
+        }
+        else{
+            authDAO.deleteAuth(authToken);
+        }
+    }
+
     public void clear() throws DataAccessException {
         userDAO.clear();
         gameDAO.clear();
         authDAO.clear();
     }
-//    public User addUser(User user) throws DataAccessException{
-//        //here add error for whether it is already in the database
-//        return dataAccess.addUser(user);
-//    }
 
-    //handler passes in register(register request)
-    /// send getUser(username) to dataaccess
+    public createGame
 
-    //if get userData, send alreadytakenexception to server
+    public listGames
 
-    //if get error, send error to server
-
-    /// if null is returned, send createUser(userData) to Dataaccess
-    /// also send createAuth(authData) to Dataaccess(may be removed in future versions)
-    /// send registerresult to handler
 
 }

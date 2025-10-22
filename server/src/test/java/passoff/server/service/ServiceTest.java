@@ -1,14 +1,18 @@
 package passoff.server.service;
 import dataaccess.*;
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import recordrequests.RegisterRequest;
+import recordrequests.RegisterResult;
 import service.Service;
 import model.UserData;
 
 import javax.xml.crypto.Data;
+
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,12 +21,13 @@ public class ServiceTest {
     MemoryUser userMemory = new MemoryUser();
     MemoryGame gameMemory = new MemoryGame();
     MemoryAuth authMemory = new MemoryAuth();
-    Service userService = new Service(userMemory,gameMemory,authMemory);
+    Service userService = new Service(userMemory, gameMemory, authMemory);
+
     @Test
     @DisplayName("registering a user and it returns a register result to handler")
     public void registerPositive() throws DataAccessException {
-        var userTest = new UserData("joe","jjj","chicken");
-        var authTest = userService.register(new RegisterRequest("joe","jjj","chicken"));
+        var userTest = new UserData("joe", "jjj", "chicken");
+        var authTest = userService.register(new RegisterRequest("joe", "jjj", "chicken"));
         assertNotNull(authTest.authToken());
         assertEquals("joe", authTest.username());
 
@@ -32,60 +37,115 @@ public class ServiceTest {
     @Test
     @DisplayName("registering a user but it returns with an error")
     public void registerNegative() throws DataAccessException {
-        var userTest = new UserData("joe","jjj","chicken");
-        var authTest = userService.register(new RegisterRequest("joe","jjj","chicken"));
+        var userTest = new UserData("joe", "jjj", "chicken");
+        var authTest = userService.register(new RegisterRequest("joe", "jjj", "chicken"));
         assertNotNull(authTest.authToken());
         assertEquals("joe", authTest.username());
 
     }
-//
-//    @Test
-//    @DisplayName("Logged in")
-//    public void loginPositive() throws DataAccessException{
-//        var userTest = new UserData("usern","pass","email");
-//        userService.register(new RegisterRequest(userTest.username(),userTest.password(),userTest.email()));
-//        var authTest = userService.login(userTest);
-//        assertNotNull(authTest.authToken());
-//        assertEquals("usern",authtest.username());
-//    }
-//
-//    @Test
-//    @DisplayName("Not Logged in because of Error")
-//    public void loginNegative throws DataAccessException{
-//        var userTest = new UserData("user", "pass", "email");
-//        userService.register(userTest);
-//        var userTestTwo = new UserData("user","notpass", "email");
-//        assertThrows(userService.login(userTestTwo));
-//    }
-//    @Test
-//    @DisplayName("logged out")
-//
-//    @Test
-//    @DisplayName("not logged out")
-//
+
+    @Test
+    @DisplayName("Logged in")
+    public void loginPositive() throws DataAccessException{
+        UserData user = new UserData("chicken","tulip","dandelion");
+        userService.register(new RegisterRequest("chicken","tulip","dandelion"));
+        AuthData authData = userService.loginUser(user);
+        assertEquals(authMemory.getAuth(authData.authToken()), authData);
+
+    }
+
+    @Test
+    @DisplayName("Not Logged in because of Error")
+    public void loginNegative() throws DataAccessException{
+        UserData user = new UserData("chicken","tulip","dandelion");
+        assertThrows(DataAccessException.class, () -> userService.loginUser(user));
+        userService.register(new RegisterRequest("chicken","tulip","dandelion"));
+        UserData userTwo = new UserData("chicken", "dumpling", "dandelion");
+        Assertions.assertThrows(DataAccessException.class, () -> userService.loginUser(userTwo));
+    }
+
+
+    @Test
+    @DisplayName("logged out")
+    public void logoutPositive() throws DataAccessException{
+        UserData user = new UserData("chicken","tulip","dandelion");
+        RegisterResult auth = userService.register(new RegisterRequest("chicken","tulip","dandelion"));
+        userService.logoutUser(auth.authToken());
+        assertEquals(null,authMemory.getAuth(auth.authToken()));
+        //assertThrows(DataAccessException.class, () -> authMemory.getAuth(auth.authToken()));
+    }
+
+    @Test
+    @DisplayName("not logged out")
+    public void logoutNegative() throws DataAccessException {
+        RegisterResult auth = userService.register(new RegisterRequest("chicken", "tulip", "dandelion"));
+        UserData user = new UserData("chicken", "tulip", "dandelion");
+        assertThrows(DataAccessException.class, () -> userService.logoutUser("chickadee"));
+    }
 //    @Test
 //    @DisplayName("list games")
+//    public void listGamesPostitive() throws DataAccessException{
+//        AuthData authData = new AuthData("authT", "userN");
+//        HashSet<GameData> hashSet = HashSet.newHashSet(3);
+//
+//        int gameIDOne = userService.createGame(authData.authToken(),"a");
+//        int gameIDTwo = userService.createGame(authData.authToken(),"b");
+//        int gameIDThree = userService.createGame(authData.authToken(),"c");
+//
+//        hashSet.add(new GameData(gameIDOne, "w", "b", "a", null));
+//        hashSet.add(new GameData(gameIDTwo, "w", "b", "b", null));
+//        hashSet.add(new GameData(gameIDThree, "w", "b", "c", null));
+//
+//        assertEquals(hashSet, userService.listGames(authData.authToken()));
+//    }
 //
 //    @Test
-//    @DisplayName("cant list games")
-//
-//    @Test
-//    @DisplayName("create new game")
-//
-//    @Test
-//    @DisplayName("cant create new game")
-//
+//    @DisplayName("cant list games because its empty")
+//    public void listGamesTestNegative() throws DataAccessException {
+//        assertThrows(DataAccessException.class, () -> userService.listGames("chicken"));
+//    }
+
+    @Test
+    @DisplayName("create new game")
+    public void createGamePositive() throws DataAccessException {
+        AuthData authData = new AuthData("authT", "userN");
+        int gameID = userService.createGame(authData.authToken(), "game one");
+        assertNotNull(gameMemory.getGame(gameID));
+        int gameIDTwo = userService.createGame(authData.authToken(), "game two");
+        Assertions.assertNotEquals(gameID, gameIDTwo);
+    }
+
+    @Test
+    @DisplayName("cant create new game")
+    public void createGameNegative() throws DataAccessException {
+        Assertions.assertThrows(DataAccessException.class, () -> userService.createGame("authtoken", "name"));
+    }
+
 //    @Test
 //    @DisplayName("join game")
-//
+//    public void joinGamePositive() throws DataAccessException {
+//        AuthData authData = new AuthData("authT", "userN");
+//        int gameID = userService.createGame(authData.authToken(), "nameofgame");
+//        userService.joinGame(authData.authToken(), gameID, "WHITE");
+//        GameData gameData = new GameData(gameID, authData.username(), null, "nameofgame", null);
+//        assertEquals(gameData, gameMemory.getGame(gameID));
+//    }
+
 //    @Test
 //    @DisplayName("cant join game")
-//
+//    public void joinGameNegative() throws DataAccessException {
+//        AuthData authData = new AuthData("authT", "userN");
+//        int gameID = userService.createGame(authData.authToken(), "name");
+//        assertThrows(DataAccessException.class, () -> userService.joinGame("authT", gameID, "WHITE"));
+//        assertThrows(DataAccessException.class, () -> userService.joinGame(authData.authToken(), 12, "WHITE"));
+//        assertThrows(DataAccessException.class, () -> userService.joinGame(authData.authToken(), gameID, "PINK"));
+//    }
+
     @Test
     @DisplayName("clear")
-    void clearPositive() throws DataAccessException{
-        userMemory.createUser(new UserData("chicken","pumpkin","halloween"));
-        authMemory.createAuth(new AuthData("candy","corn"));
+    public void clearPositive() throws DataAccessException {
+        userMemory.createUser(new UserData("chicken", "pumpkin", "halloween"));
+        authMemory.createAuth(new AuthData("candy", "corn"));
         int game = gameMemory.createGame("orange");
         assertNotNull(userMemory.getUser("chicken"));
         assertNotNull(authMemory.getAuth("candy"));
@@ -101,9 +161,9 @@ public class ServiceTest {
 
     @Test
     @DisplayName("clear false")
-    void clearNegative() throws DataAccessException{
-        userMemory.createUser(new UserData("chicken","pumpkin","halloween"));
-        authMemory.createAuth(new AuthData("candy","corn"));
+    void clearNegative() throws DataAccessException {
+        userMemory.createUser(new UserData("chicken", "pumpkin", "halloween"));
+        authMemory.createAuth(new AuthData("candy", "corn"));
         int game = gameMemory.createGame("orange");
         assertNotNull(userMemory.getUser("chicken"));
         assertNotNull(authMemory.getAuth("candy"));
@@ -114,24 +174,6 @@ public class ServiceTest {
         assertNull(userMemory.getUser("chicken"));
         assertNull(authMemory.getAuth("candy"));
         assertNull(gameMemory.getGame(game));
-        assertDoesNotThrow(()->userMemory.clear());
+        assertDoesNotThrow(() -> userMemory.clear());
     }
-
-//    @Test
-//    @DisplayName("cant clear")
-//    var user = new UserData("joe","j@j","j");
-//        MemoryUser da = new MemoryUser();
-//        assertNull(da.getUser(user.username()));
-//        da.createUser(user);
-//        assertNotNull(da.getUser(user.username));
-//        @Override
-//        public void createUser(UserData userData) {
-//
-//        }
-
-//        @Override
-//        public UserData getUser(String username) {
-//            return null;
-//        }
-    }
-
+}

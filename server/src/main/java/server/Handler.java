@@ -9,9 +9,12 @@ import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 import service.Service;
 
+import javax.xml.crypto.Data;
+
 public class Handler {
     //UserService userService = new UserService;
     Service service ;
+
 
     public Handler(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
         Service service = new Service(userDAO, gameDAO, authDAO);
@@ -25,14 +28,9 @@ public class Handler {
         ctx.status(200);
         ctx.json(new Gson().toJson(registerResult));
     }
-//    public static String generateRandomString(){
-//        return UUID.randomUUID().toString();
-//    }
-    }
-    //string login returns a serialized string
-    //logout
-    //list games
-    //create game
-    //join game
-    //clear application
+    public void clearHandler(Context ctx) throws DataAccessException{
+            service.clear();
+            ctx.status(200);
 
+    }
+    }

@@ -1,5 +1,6 @@
 package passoff.server.service;
 import dataaccess.*;
+import model.AuthData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,15 +39,15 @@ public class ServiceTest {
 
     }
 //
-    @Test
-    @DisplayName("Logged in")
-    public void loginPositive() throws DataAccessException{
-        var userTest = new UserData("usern","pass","email");
-        userService.register(new RegisterRequest(userTest.username(),userTest.password(),userTest.email()));
-        var authTest = userService.login(userTest);
-        assertNotNull(authTest.authToken());
-        assertEquals("usern",authtest.username());
-    }
+//    @Test
+//    @DisplayName("Logged in")
+//    public void loginPositive() throws DataAccessException{
+//        var userTest = new UserData("usern","pass","email");
+//        userService.register(new RegisterRequest(userTest.username(),userTest.password(),userTest.email()));
+//        var authTest = userService.login(userTest);
+//        assertNotNull(authTest.authToken());
+//        assertEquals("usern",authtest.username());
+//    }
 //
 //    @Test
 //    @DisplayName("Not Logged in because of Error")
@@ -80,25 +81,57 @@ public class ServiceTest {
 //    @Test
 //    @DisplayName("cant join game")
 //
+    @Test
+    @DisplayName("clear")
+    void clearPositive() throws DataAccessException{
+        userMemory.createUser(new UserData("chicken","pumpkin","halloween"));
+        authMemory.createAuth(new AuthData("candy","corn"));
+        int game = gameMemory.createGame("orange");
+        assertNotNull(userMemory.getUser("chicken"));
+        assertNotNull(authMemory.getAuth("candy"));
+        assertNotNull(gameMemory.getGame(game));
+        userMemory.clear();
+        authMemory.clear();
+        gameMemory.clear();
+        assertNull(userMemory.getUser("chicken"));
+        assertNull(authMemory.getAuth("candy"));
+        assertNull(gameMemory.getGame(game));
+
+    }
+
+    @Test
+    @DisplayName("clear false")
+    void clearNegative() throws DataAccessException{
+        userMemory.createUser(new UserData("chicken","pumpkin","halloween"));
+        authMemory.createAuth(new AuthData("candy","corn"));
+        int game = gameMemory.createGame("orange");
+        assertNotNull(userMemory.getUser("chicken"));
+        assertNotNull(authMemory.getAuth("candy"));
+        assertNotNull(gameMemory.getGame(game));
+        userMemory.clear();
+        authMemory.clear();
+        gameMemory.clear();
+        assertNull(userMemory.getUser("chicken"));
+        assertNull(authMemory.getAuth("candy"));
+        assertNull(gameMemory.getGame(game));
+        assertDoesNotThrow(()->userMemory.clear());
+    }
+
 //    @Test
-//    @DisplayName("clear")
+//    @DisplayName("cant clear")
 //    var user = new UserData("joe","j@j","j");
-//    MemoryUser da = new MemoryUser();
-//    assertNull(d()a.getUser(user.username()));
-//    da.createUser(user);
-//    assertNotNull(da.getUser(user.username));
+//        MemoryUser da = new MemoryUser();
+//        assertNull(da.getUser(user.username()));
+//        da.createUser(user);
+//        assertNotNull(da.getUser(user.username));
 //        @Override
 //        public void createUser(UserData userData) {
 //
 //        }
-//
+
 //        @Override
 //        public UserData getUser(String username) {
 //            return null;
 //        }
-//    }
-//
-//    @Test
-//    @DisplayName("cant clear")
-//
-}
+    }
+

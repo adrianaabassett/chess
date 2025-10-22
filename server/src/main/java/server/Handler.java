@@ -6,12 +6,14 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import io.javalin.http.Context;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
+import recordrequests.JoinGameRequest;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 import service.Service;
 
-import javax.xml.crypto.Data;
+import java.util.HashMap;
 
 public class Handler {
     //UserService userService = new UserService;
@@ -48,4 +50,19 @@ public class Handler {
            ctx.status(200);
     }
 
+    public void createGame(Context ctx) throws DataAccessException{
+        GameData gameData = new Gson().fromJson(ctx.body(),GameData.class);
+        GameData newGame = service.createGame(gameData.gameName(),ctx.header("Authorization"));
+        ctx.status(200);
+    }
+
+    public String listGames(Context ctx) throws DataAccessException{
+        ctx.status(200);
+        return service.listGames(ctx.header("Authorization"));
+    }
+    public void joinGame(Context ctx) throws DataAccessException{
+        JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest(req.headers("Authorization")));
+        service.joinGame(joinGameRequest.authToken(),joinGameRequest.playerColor(),joinGameRequest.gameID());
+        ctx.status(200);
+    }
     }

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class MemoryGame implements GameDAO {
-    private final HashMap<String, GameData> games = new HashMap<>();
+    private final HashMap<Integer, GameData> games = new HashMap<>();
     private int generateRandomNumber(){
         Random random = new Random();
         return random.nextInt(1,1000000);
@@ -19,24 +19,24 @@ public class MemoryGame implements GameDAO {
     public int createGame(String gameName) throws DataAccessException{
         int gameID = generateRandomNumber();
         GameData newGame = new GameData(gameID,null,null,gameName,new ChessGame());
-        games.put(String.valueOf(gameID),newGame);
+        games.put(gameID,newGame);
         return gameID;
     }
     @Override
     public GameData getGame(int gameID) throws DataAccessException{
-        return games.get(String.valueOf(gameID));
+        return games.get(gameID);
     }
     @Override
-    public Hashmap<String, GameData> listGames() throws DataAccessException{
+    public HashMap<Integer, GameData> listGames() throws DataAccessException{
         return games;
     }
 
     @Override
-    void updateGame(GameData game) throws DataAccessException{
-        games.remove(String.valueOf(game.gameID()));
-        games.put(String.valueOf(game.gameID()),game);
+    public void updateGame(GameData game) throws DataAccessException{
+        games.remove(game.gameID());
+        games.put(game.gameID(),game);
     }
-    @Override
+
     public String getUsername(String playerColor, int gameID) throws DataAccessException{
         var game = getGame(gameID);
         if(playerColor.equals("WHITE")){

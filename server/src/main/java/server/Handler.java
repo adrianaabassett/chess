@@ -1,6 +1,8 @@
 package server;
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import io.javalin.http.Context;
 import recordrequests.RegisterRequest;
@@ -11,8 +13,8 @@ public class Handler {
     //UserService userService = new UserService;
     Service service ;
 
-    public Handler(UserDAO userDAO){
-        service = new Service(userDAO);
+    public Handler(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
+        Service service = new Service(userDAO, gameDAO, authDAO);
     }
     //it is an Authdata because thats what the register result has
     public void registerHandler(Context ctx) throws DataAccessException{

@@ -13,8 +13,10 @@ import java.util.UUID;
 
 public class Service {
     UserDAO userDAO;
+    AuthDAO authDAO;
     public Service(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
         this.userDAO=userDAO;
+        this.authDAO = authDAO;
     }
 
     private String generateRandomString(){
@@ -28,7 +30,7 @@ public class Service {
         if(userDAO.getUser(regReq.username())==null){
             String authToken = generateRandomString();
             AuthData authdata = new AuthData(authToken,regReq.username());
-            AuthDAO.createAuth(authdata);
+            authDAO.createAuth(authdata);
             userDAO.createUser(new UserData(regReq.username(),regReq.password(),regReq.email()));
             RegisterResult regRes = new RegisterResult(regReq.username(), authToken);
             return regRes;

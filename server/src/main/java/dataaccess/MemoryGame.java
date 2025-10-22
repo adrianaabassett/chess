@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import java.util.HashMap;
 import java.util.Random;
@@ -16,7 +17,7 @@ public class MemoryGame implements GameDAO {
         games.clear();
     }
     @Override
-    public int createGame(String gameName) throws DataAccessException{
+    public int createGame(String gameName) throws DataAccessException {
         int gameID = generateRandomNumber();
         GameData newGame = new GameData(gameID,null,null,gameName,new ChessGame());
         games.put(gameID,newGame);
@@ -31,12 +32,12 @@ public class MemoryGame implements GameDAO {
         return games;
     }
 
-    @Override
-    public void updateGame(GameData game) throws DataAccessException{
-        games.remove(game.gameID());
-        games.put(game.gameID(),game);
-    }
+//    public String toStringListGames(AuthData authData) throws DataAccessException{
+//        GamesList games = new GamesList(gameService.listGames(authToken));
+//
+//    }
 
+    @Override
     public String getUsername(String playerColor, int gameID) throws DataAccessException{
         var game = getGame(gameID);
         if(playerColor.equals("WHITE")){
@@ -48,6 +49,10 @@ public class MemoryGame implements GameDAO {
         else{
             return null;
         }
+    }
+    public void updateGame(GameData game) throws DataAccessException{
+        games.remove(game.gameID());
+        games.put(game.gameID(),game);
     }
 
 }

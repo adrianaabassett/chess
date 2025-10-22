@@ -1,7 +1,7 @@
 package server;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
+import dataaccess.exceptions.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import io.javalin.http.Context;
@@ -12,8 +12,6 @@ import recordrequests.JoinGameRequest;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 import service.Service;
-
-import java.util.HashMap;
 
 public class Handler {
     //UserService userService = new UserService;
@@ -58,10 +56,11 @@ public class Handler {
 
     public String listGames(Context ctx) throws DataAccessException{
         ctx.status(200);
-        return service.listGames(ctx.header("Authorization"));
+        return new Gson().toJson(service.listGames(ctx.header("Authorization")));
+
     }
     public void joinGame(Context ctx) throws DataAccessException{
-        JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest(req.headers("Authorization")));
+        JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest.class);
         service.joinGame(joinGameRequest.authToken(),joinGameRequest.playerColor(),joinGameRequest.gameID());
         ctx.status(200);
     }

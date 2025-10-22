@@ -1,5 +1,7 @@
 package passoff.server.service;
+import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.exceptions.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
@@ -10,9 +12,7 @@ import recordrequests.RegisterResult;
 import service.Service;
 import model.UserData;
 
-import javax.xml.crypto.Data;
-
-import java.util.HashSet;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -82,43 +82,44 @@ public class ServiceTest {
         UserData user = new UserData("chicken", "tulip", "dandelion");
         assertThrows(DataAccessException.class, () -> userService.logoutUser("chickadee"));
     }
-//    @Test
-//    @DisplayName("list games")
-//    public void listGamesPostitive() throws DataAccessException{
-//        AuthData authData = new AuthData("authT", "userN");
-//        HashSet<GameData> hashSet = HashSet.newHashSet(3);
-//
-//        int gameIDOne = userService.createGame(authData.authToken(),"a");
-//        int gameIDTwo = userService.createGame(authData.authToken(),"b");
-//        int gameIDThree = userService.createGame(authData.authToken(),"c");
-//
-//        hashSet.add(new GameData(gameIDOne, "w", "b", "a", null));
-//        hashSet.add(new GameData(gameIDTwo, "w", "b", "b", null));
-//        hashSet.add(new GameData(gameIDThree, "w", "b", "c", null));
-//
-//        assertEquals(hashSet, userService.listGames(authData.authToken()));
-//    }
-//
-//    @Test
-//    @DisplayName("cant list games because its empty")
-//    public void listGamesTestNegative() throws DataAccessException {
-//        assertThrows(DataAccessException.class, () -> userService.listGames("chicken"));
-//    }
+    @Test
+    @DisplayName("list games")
+    public void listGamesPostitive() throws DataAccessException{
+        RegisterResult registerResult = userService.register(new RegisterRequest("userN", "pass","mail"));
+        String authToken = registerResult.authToken();
+        HashMap<Integer, GameData> hashMap = new HashMap<>();
+
+        int gameIDOne = userService.createGame("a",authToken).gameID();
+        int gameIDTwo = userService.createGame("b",authToken).gameID();
+        int gameIDThree = userService.createGame("c",authToken).gameID();
+
+        hashMap.put(gameIDOne, new GameData(gameIDOne, null, null, "a", new ChessGame()));
+        hashMap.put(gameIDTwo, new GameData(gameIDTwo, null, null, "b", new ChessGame()));
+        hashMap.put(gameIDThree, new GameData(gameIDThree, null, null, "c", new ChessGame()));
+
+        assertEquals(hashMap, userService.listGames(authToken));
+    }
+
+    @Test
+    @DisplayName("cant list games because its empty")
+    public void listGamesTestNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> userService.listGames("chicken"));
+    }
 
     @Test
     @DisplayName("create new game")
     public void createGamePositive() throws DataAccessException {
-        AuthData authData = new AuthData("authT", "userN");
-        int gameID = userService.createGame(authData.authToken(), "game one");
+        RegisterResult register = userService.register(new RegisterRequest("usern","pass","email"));
+        int gameID = userService.createGame("game one",register.authToken()).gameID();
         assertNotNull(gameMemory.getGame(gameID));
-        int gameIDTwo = userService.createGame(authData.authToken(), "game two");
+        int gameIDTwo = userService.createGame("game two",register.authToken()).gameID();
         Assertions.assertNotEquals(gameID, gameIDTwo);
     }
 
     @Test
     @DisplayName("cant create new game")
     public void createGameNegative() throws DataAccessException {
-        Assertions.assertThrows(DataAccessException.class, () -> userService.createGame("authtoken", "name"));
+        Assertions.assertThrows(DataAccessException.class, () -> userService.createGame("name", "authToken"));
     }
 
 //    @Test

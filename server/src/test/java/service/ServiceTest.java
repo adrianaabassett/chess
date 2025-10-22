@@ -1,34 +1,46 @@
-package service;
-
-import org.junit.jupiter.api.Test;
-import model.*;
+package passoff.server;
 import dataaccess.DataAccessException;
+import dataaccess.MemoryAuth;
+import dataaccess.MemoryGame;
+import dataaccess.MemoryUser;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import recordrequests.RegisterRequest;
+import service.Service;
+import model.UserData;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+// for simplicity's sake, I'm putting all of my testis in this file
 public class ServiceTest {
+    var userMemory = new MemoryUser();
+    var gameMemory = new MemoryGame();
+    var authMemory = new MemoryAuth();
+    var userService = new Service(userMemory,gameMemory,authMemory);
+    @Test
+    @DisplayName("registering a user and it returns a register result to handler")
+    public void registerPositive() throws DataAccessException {
+        var userTest = new UserData("joe","jjj","chicken");
+        var authTest = userService.register(new RegisterRequest("joe","jjj","chicken"));
+
+        assertNotNull(authTest.authToken());
+        assertEquals("joe", authTest.username());
+
+    }
+    //try to register a user without a password
 
     @Test
-    void register() throws Exception{
-        var user = new UserData("joe","j@j","j");
-        var at = "xyz";
-//
-//        var da = new DataAccess();
-//        var service = new UserService();
-
-        var da = new MemoryDataAccess();
-        var service = new Service(da);
-        AuthToken res = service.register(user);
+    @DisplayName("registering a user but it returns with an error alreay taken to server")
+    public void registerNormal(){
+        var dataAccess = new MemoryDataAccess();
+        //try to register user with a password
+        var userService = new Service(dataAccess);
+        var res = userService.register(new UserData("cow","rat","john"));
         assertNotNull(res);
-        assertEquals(res.username(), user.username());
-        assertNotNull(res.authToken());
-        assertEquals(String.class, res.authToken().getClass());
     }
 
-    @Test
-    void testRegister() throws DataAccessException {
-        void
-    }
-    @Test
-    void clear(){
 
-    }
+    @Test
+    @DisplayName("registering a user but it returns with an error bad request")
 }

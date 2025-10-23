@@ -71,7 +71,7 @@ public class ChessGame {
         //testing each possible move to make sure it wont put it in check
 
         for(ChessMove current: board.getPiece(startPosition).pieceMoves(board,startPosition)){
-            boolean JumpsIntoNull = board.getPiece(current.getEndPosition()) == null;
+            boolean jumpsIntoNull = board.getPiece(current.getEndPosition()) == null;
             board = copyBoard(savingBoard);
             ChessPiece testingPiece =board.getPiece(startPosition);
             board.addPiece(current.getEndPosition(),board.getPiece(startPosition));
@@ -87,11 +87,11 @@ public class ChessGame {
                 if(startPosition.getColumn()+1 == current.getEndPosition().getColumn() ||  startPosition.getColumn() -1 == current.getEndPosition().getColumn()){
                     //where it jumps
                     //most likely change
-                    if(JumpsIntoNull && isPassantNext){
+                    if(jumpsIntoNull && isPassantNext){
                         moves.add(current);
                     }
 
-                    else if (!JumpsIntoNull){
+                    else if (!jumpsIntoNull){
                         moves.add(current);
                     }
                 }

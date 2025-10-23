@@ -32,11 +32,10 @@ public class Service {
     }
 
     public RegisterResult register(RegisterRequest regReq) throws DataAccessException, BadRequest{
-
-        if(regReq.username() == null||regReq.password()==null||regReq.email()==null){
+        if(regReq.username() == null||regReq.password()==null||regReq.email()==null||regReq.password().isEmpty()){
             throw new BadRequest("no username,password, or email");
         }
-        if(userDAO.getUser(regReq.username())==null){
+        else if(userDAO.getUser(regReq.username())==null){
             String authToken = generateRandomString();
             AuthData authdata = new AuthData(authToken,regReq.username());
             authDAO.createAuth(authdata);

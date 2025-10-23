@@ -1,4 +1,4 @@
-package passoff.server.service;
+package service;
 import chess.ChessGame;
 import dataaccess.*;
 import dataaccess.exceptions.*;

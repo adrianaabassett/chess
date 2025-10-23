@@ -18,6 +18,8 @@ import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 import service.Service;
 
+import java.util.Map;
+
 public class Handler {
     private static final Logger log = LoggerFactory.getLogger(Handler.class);
     //UserService userService = new UserService;
@@ -34,12 +36,13 @@ public class Handler {
                 RegisterRequest regReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         RegisterResult registerResult = service.register(regReq);
             ctx.status(200);
+            ctx.result("{}");
             ctx.json(new Gson().toJson(registerResult));
         //below sets the json, which is the response to the request of the server
         }
         catch(BadRequest e){
             ctx.status(400);
-            ctx.result("{\"message\":\"Error:ill add this later\"}");
+            ctx.result("{\"message\":\"Error:bad request\"}");
         }
         catch(DataAccessException e){
             ctx.status(500);}
@@ -49,9 +52,11 @@ public class Handler {
                 service.clear();
 
             ctx.status(200);
+                ctx.result("{}");
         }
             catch(DataAccessException e){
                 ctx.status(400);
+                ctx.result("{\"message\":\"Error:bad request\"}");
             }
     }
 
@@ -60,18 +65,22 @@ public class Handler {
             UserData userData = new Gson().fromJson(ctx.body(),UserData.class);
         AuthData authData = service.loginUser(userData);
         ctx.status(200);
+            ctx.result("{}");
         }
         catch(DataAccessException e){
             ctx.status(501);
         }
         catch(UnauthorizedException e){
             ctx.status(401);
+            ctx.result("{\"message\":\"Error:unauthorized\"}");
         }
         catch(BadRequest e){
             ctx.status(400);
+            ctx.result("{\"message\":\"Error:bad request\"}");
         }
         catch(InvalidID e){
             ctx.status(403);
+            ctx.result("{\"message\":\"Error:already taken\"}");
         }
     }
 
@@ -80,12 +89,15 @@ public class Handler {
             String authToken = ctx.header("Authorization");
         service.logoutUser(authToken);
         ctx.status(200);
+            ctx.result("{}");
     }
         catch(DataAccessException e){
                 ctx.status(405);
         }
         catch(UnauthorizedException e){
             ctx.status(401);
+            ctx.result("{\"message\":\"Error:unauthorized\"}");
+
         }
     }
 
@@ -94,6 +106,7 @@ public class Handler {
             GameData gameData = new Gson().fromJson(ctx.body(), GameData.class);
             GameData newGame = service.createGame(gameData.gameName(), ctx.header("Authorization"));
             ctx.status(200);
+            ctx.result(new Gson().toJson(Map.of("gameID",newGame.gameID())));
             return newGame;
         }
         catch(DataAccessException e){
@@ -101,17 +114,22 @@ public class Handler {
         }
         catch(UnauthorizedException e){
             ctx.status(401);
+            ctx.result("{\"message\":\"Error:unauthorized\"}");
+
         }
         catch(BadRequest e){
             ctx.status(400);
+            ctx.result("{\"message\":\"Error:bad request\"}");
         }
         return null;
     }
 
     public void listGames(Context ctx) throws DataAccessException{
         try {
-            new Gson().toJson(service.listGames(ctx.header("Authorization")));
+            var obj = new Gson().toJson(Map.of("games",service.listGames(ctx.header("Authorization"))));
             ctx.status(200);
+            ctx.result(obj);
+
         }catch(DataAccessException e){
                 ctx.status(405);
         }
@@ -122,19 +140,25 @@ public class Handler {
     public void joinGame(Context ctx) throws DataAccessException, BadRequest, UnauthorizedException, InvalidID {
         try{
             JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest.class);
-        service.joinGame(joinGameRequest.authToken(),joinGameRequest.playerColor(),joinGameRequest.gameID());
+        service.joinGame(ctx.header("Authorization"),joinGameRequest.playerColor(),joinGameRequest.gameID());
         ctx.status(200);
+            ctx.result("{}");
     }catch(DataAccessException e){
         ctx.status(405);
     }
         catch(BadRequest e){
             ctx.status(400);
+            ctx.result("{\"message\":\"Error:bad request\"}");
         }
         catch(UnauthorizedException e){
             ctx.status(401);
+            ctx.result("{\"message\":\"Error:unauthorized\"}");
+
         }
         catch(InvalidID e){
             ctx.status(403);
+            ctx.result("{\"message\":\"Error:already taken\"}");
+
         }
     }
     }

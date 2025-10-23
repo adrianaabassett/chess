@@ -14,6 +14,7 @@ import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -99,7 +100,7 @@ public class Service {
         }
     }
 
-    public HashMap<Integer, GameData> listGames(String authToken) throws DataAccessException{
+    public List<GameData> listGames(String authToken) throws DataAccessException{
         if(authDAO.getAuth(authToken)==null){
             throw new DataAccessException("this user does not exist");
         }
@@ -118,18 +119,18 @@ public class Service {
         else if(gameDAO.getUsername(playerColor,gameID)!=null){
             throw new InvalidID("someone already claimed this color");
         }
-        else if(!playerColor.equals("WHITE") || !playerColor.equals("BLACK")){
+        else if(!playerColor.equals("WHITE") && !playerColor.equals("BLACK")){
             throw new BadRequest("please only play as black or white");
         }
         else{
             GameData gameData = gameDAO.getGame(gameID);
             String whiteUsername;
             String blackUsername;
-            if(playerColor=="WHITE") {
+            if(playerColor.equals("WHITE")) {
                 whiteUsername = authDAO.getAuth(authToken).getUsername();
                 blackUsername = gameData.blackUsername();
             }
-            else if(playerColor=="BLACK") {
+            else if(playerColor.equals("BLACK")) {
                 whiteUsername = gameData.whiteUsername();
                 blackUsername = authDAO.getAuth(authToken).getUsername();
             }

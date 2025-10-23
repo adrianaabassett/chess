@@ -3,8 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
-import java.util.HashMap;
-import java.util.Random;
+
+import java.util.*;
 
 public class MemoryGame implements GameDAO {
     private final HashMap<Integer, GameData> games = new HashMap<>();
@@ -28,8 +28,14 @@ public class MemoryGame implements GameDAO {
         return games.get(gameID);
     }
     @Override
-    public HashMap<Integer, GameData> listGames() throws DataAccessException{
-        return games;
+    public List<GameData> listGames() throws DataAccessException{
+        ArrayList<GameData> newGames= new ArrayList<>();
+        Collection<GameData> gameValues = games.values();
+        for(GameData game:gameValues){
+            if(game!=null){
+            newGames.add(game);}
+        }
+        return newGames;
     }
 
 //    public String toStringListGames(AuthData authData) throws DataAccessException{

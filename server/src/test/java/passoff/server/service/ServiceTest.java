@@ -1,10 +1,7 @@
 package passoff.server.service;
 import chess.ChessGame;
 import dataaccess.*;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.InvalidID;
-import dataaccess.exceptions.UnauthorizedException;
+import dataaccess.exceptions.*;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
@@ -28,7 +25,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("registering a user and it returns a register result to handler")
-    public void registerPositive() throws DataAccessException, BadRequest {
+    public void registerPositive() throws DataAccessException, BadRequest, AlreadyTakenException {
         var userTest = new UserData("joe", "jjj", "chicken");
         var authTest = userService.register(new RegisterRequest("joe", "jjj", "chicken"));
         assertNotNull(authTest.authToken());
@@ -39,7 +36,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("registering a user but it returns with an error")
-    public void registerNegative() throws DataAccessException, BadRequest {
+    public void registerNegative() throws DataAccessException, BadRequest, AlreadyTakenException {
         var userTest = new UserData("joe", "jjj", "chicken");
         var authTest = userService.register(new RegisterRequest("joe", "jjj", "chicken"));
         assertNotNull(authTest.authToken());
@@ -49,7 +46,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("Logged in")
-    public void loginPositive() throws DataAccessException, BadRequest, UnauthorizedException, InvalidID {
+    public void loginPositive() throws DataAccessException, BadRequest, UnauthorizedException, InvalidID, AlreadyTakenException {
         UserData user = new UserData("chicken","tulip","dandelion");
         userService.register(new RegisterRequest("chicken","tulip","dandelion"));
         AuthData authData = userService.loginUser(user);
@@ -59,7 +56,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("Not Logged in because of Error")
-    public void loginNegative() throws DataAccessException, BadRequest {
+    public void loginNegative() throws DataAccessException, BadRequest, AlreadyTakenException {
         UserData user = new UserData("chicken","tulip","dandelion");
         assertThrows(DataAccessException.class, () -> userService.loginUser(user));
         userService.register(new RegisterRequest("chicken","tulip","dandelion"));
@@ -70,7 +67,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("logged out")
-    public void logoutPositive() throws DataAccessException, BadRequest, UnauthorizedException {
+    public void logoutPositive() throws DataAccessException, BadRequest, UnauthorizedException, AlreadyTakenException {
         UserData user = new UserData("chicken","tulip","dandelion");
         RegisterResult auth = userService.register(new RegisterRequest("chicken","tulip","dandelion"));
         userService.logoutUser(auth.authToken());
@@ -80,14 +77,14 @@ public class ServiceTest {
 
     @Test
     @DisplayName("not logged out")
-    public void logoutNegative() throws DataAccessException, BadRequest {
+    public void logoutNegative() throws DataAccessException, BadRequest, AlreadyTakenException {
         RegisterResult auth = userService.register(new RegisterRequest("chicken", "tulip", "dandelion"));
         UserData user = new UserData("chicken", "tulip", "dandelion");
         assertThrows(DataAccessException.class, () -> userService.logoutUser("chickadee"));
     }
     @Test
     @DisplayName("list games")
-    public void listGamesPostitive() throws DataAccessException, UnauthorizedException, BadRequest {
+    public void listGamesPostitive() throws DataAccessException, UnauthorizedException, BadRequest, AlreadyTakenException {
         RegisterResult registerResult = userService.register(new RegisterRequest("userN", "pass","mail"));
         String authToken = registerResult.authToken();
         HashMap<Integer, GameData> hashMap = new HashMap<>();
@@ -111,7 +108,7 @@ public class ServiceTest {
 
     @Test
     @DisplayName("create new game")
-    public void createGamePositive() throws DataAccessException, UnauthorizedException, BadRequest {
+    public void createGamePositive() throws DataAccessException, UnauthorizedException, BadRequest, AlreadyTakenException {
         RegisterResult register = userService.register(new RegisterRequest("usern","pass","email"));
         int gameID = userService.createGame("game one",register.authToken()).gameID();
         assertNotNull(gameMemory.getGame(gameID));

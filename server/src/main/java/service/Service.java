@@ -3,13 +3,10 @@ import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.InvalidID;
-import dataaccess.exceptions.UnauthorizedException;
+import dataaccess.exceptions.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import dataaccess.exceptions.DataAccessException;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 
@@ -32,7 +29,7 @@ public class Service {
         return UUID.randomUUID().toString();
     }
 
-    public RegisterResult register(RegisterRequest regReq) throws DataAccessException, BadRequest{
+    public RegisterResult register(RegisterRequest regReq) throws DataAccessException, BadRequest, AlreadyTakenException {
         if(regReq.username() == null||regReq.password()==null||regReq.email()==null||regReq.password().isEmpty()){
             throw new BadRequest("no username,password, or email");
         }
@@ -45,20 +42,23 @@ public class Service {
             return regRes;
         }
         else{
-            throw new DataAccessException("this username already exists");
+            throw new AlreadyTakenException("this username already exists");
         }
     }
 
     public AuthData loginUser(UserData userData) throws DataAccessException, UnauthorizedException, BadRequest, InvalidID {
-        if(userData.username() == null|| userData.password()==null ||userData.email() == null || userDAO.getUser(userData.username())==null){
+        if(userData.username() == null|| userData.password()==null){
             throw new BadRequest("error: one of your information spots are blank");
         }
-        else if (userDAO.getUser(userData.username()).password()!=userData.password()){
+        else if (userDAO.getUser(userData.username())==null){
+            throw new DataAccessException("error: this username doesnt work");
+        }
+        else if (!userDAO.getUser(userData.username()).password().equals(userData.password())){
             throw new UnauthorizedException("error: username and password are incorrect");
         }
-        else if (userDAO.getUser(userData.username()).password()!=null){
-            throw new InvalidID("user already logged in");
-        }
+//        else if (userDAO.getUser(userData.username())!=null){
+//
+//        }
         else{
             String authToken = generateRandomString();
             var authData = new AuthData(authToken, userData.username());
@@ -70,10 +70,10 @@ public class Service {
 
     public void logoutUser(String authToken) throws DataAccessException, UnauthorizedException{
         if(authDAO.getAuth(authToken)==null||authToken.isBlank()){
-            throw new DataAccessException("Error:unable to log out due to invalid authtoken");
+            throw new UnauthorizedException("Error:unable to log out due to invalid authtoken");
         }
         else if(authDAO.getAuth(authToken)==null){
-            throw new UnauthorizedException("Error:there is no user to log out");
+            throw new DataAccessException("Error:there is no user to log out");
         }
         else{
             authDAO.deleteAuth(authToken);
@@ -100,9 +100,9 @@ public class Service {
         }
     }
 
-    public List<GameData> listGames(String authToken) throws DataAccessException{
+    public List<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedException{
         if(authDAO.getAuth(authToken)==null){
-            throw new DataAccessException("this user does not exist");
+            throw new UnauthorizedException("this user is not logged in");
         }
         else{
             return gameDAO.listGames();
@@ -113,7 +113,7 @@ public class Service {
         if(playerColor == null|| gameID==null|| gameDAO.getGame(gameID)==null ){
             throw new BadRequest("bad game idt");
         }
-        else if (authToken == null){
+        else if (authToken == null || authDAO.getAuth(authToken) == null ){
             throw new UnauthorizedException("Error: null authToken");
         }
         else if(gameDAO.getUsername(playerColor,gameID)!=null){

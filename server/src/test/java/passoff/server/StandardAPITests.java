@@ -4,7 +4,6 @@ import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
-
 import java.net.HttpURLConnection;
 import java.util.*;
 
@@ -80,10 +79,8 @@ public class StandardAPITests {
             new TestUser(null, existingUser.getPassword()),
             new TestUser(existingUser.getUsername(), null),
         };
-
         for (TestUser incompleteLoginRequest : incompleteLoginRequests) {
             TestAuthResult loginResult = serverFacade.login(incompleteLoginRequest);
-
             assertHttpBadRequest(loginResult);
             assertAuthFieldsMissing(loginResult);
         }

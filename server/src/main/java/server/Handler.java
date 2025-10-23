@@ -1,12 +1,9 @@
 package server;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.*;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.exceptions.InvalidID;
-import dataaccess.exceptions.UnauthorizedException;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.GameData;
@@ -44,20 +41,27 @@ public class Handler {
             ctx.status(400);
             ctx.result("{\"message\":\"Error:bad request\"}");
         }
+        catch(AlreadyTakenException e){
+            ctx.status(403);
+            ctx.result("{\"message\":\"Error:already taken\"}");
+        }
         catch(DataAccessException e){
-            ctx.status(500);}
+            ctx.status(501);}
     }
     public void clearHandler(Context ctx) throws DataAccessException{
-            try{
+        ctx.status(200);
+        ctx.result("{}");
+            try {
                 service.clear();
-
             ctx.status(200);
                 ctx.result("{}");
-        }
-            catch(DataAccessException e){
-                ctx.status(400);
-                ctx.result("{\"message\":\"Error:bad request\"}");
             }
+            catch(DataAccessException e){
+                //might nned to be changed to unauthorized seperately
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error:"+e.getMessage()+"}");
+            }
+
     }
 
     public void loginUser(Context ctx) throws DataAccessException, UnauthorizedException, BadRequest, InvalidID {
@@ -65,10 +69,11 @@ public class Handler {
             UserData userData = new Gson().fromJson(ctx.body(),UserData.class);
         AuthData authData = service.loginUser(userData);
         ctx.status(200);
-            ctx.result("{}");
+            ctx.result(new Gson().toJson(authData));
         }
         catch(DataAccessException e){
-            ctx.status(501);
+            ctx.status(401);
+            ctx.result("{\"message\":\"Error:unknown\"}");
         }
         catch(UnauthorizedException e){
             ctx.status(401);
@@ -86,18 +91,18 @@ public class Handler {
 
     public void logoutUser(Context ctx) throws DataAccessException, UnauthorizedException {
         try{
-            String authToken = ctx.header("Authorization");
+        String authToken = ctx.header("Authorization");
         service.logoutUser(authToken);
         ctx.status(200);
-            ctx.result("{}");
+        ctx.result("{}");
     }
         catch(DataAccessException e){
                 ctx.status(405);
+            ctx.result("{\"message\":\"Error:unknown\"}");
         }
         catch(UnauthorizedException e){
             ctx.status(401);
             ctx.result("{\"message\":\"Error:unauthorized\"}");
-
         }
     }
 
@@ -129,13 +134,14 @@ public class Handler {
             var obj = new Gson().toJson(Map.of("games",service.listGames(ctx.header("Authorization"))));
             ctx.status(200);
             ctx.result(obj);
-
         }catch(DataAccessException e){
-                ctx.status(405);
+                ctx.status(500);
+                ctx.result("{\"message\":\"Error:unknown\"}");
         }
-//        public String listGames(Context ctx) throws DataAccessException{
-//            ctx.status(200);
-//            return new Gson().toJson(service.listGames(ctx.header("Authorization")));
+        catch(UnauthorizedException e){
+            ctx.status(401);
+            ctx.result("{\"message\":\"Error:Unauthorized\"}");
+        }
     }
     public void joinGame(Context ctx) throws DataAccessException, BadRequest, UnauthorizedException, InvalidID {
         try{

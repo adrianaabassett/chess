@@ -171,8 +171,8 @@ public class ChessGame {
                         //checks it moves up positive
                         if(row == 4 && row -1 == erow){
                             //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
-                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.WHITE){
-                                //removes the piece its passing
+                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
+                                    && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.WHITE){
                                 board.addPiece(new ChessPosition(row,col+1 ) ,null);
                             }
                             if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
@@ -239,12 +239,13 @@ public class ChessGame {
         while(row<9){
             while (col<9){
                 checkPiece = board.getPiece(new ChessPosition(row, col));
-
-                if(checkPiece != null && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null&& checkPiece.getTeamColor()!=teamColor) {
                     //cycle through all possible moves of every piece;
                     Collection<ChessMove> possibleMoves= checkPiece.pieceMoves(board, new ChessPosition(row, col));
                     for(ChessMove current : possibleMoves){
-                        if (current.getEndPosition().equals(kingPosition)) {
+                        if (current.getEndPosition().equals(kingPosition)
+                                && checkPiece != null
+                                && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null
+                                && checkPiece.getTeamColor()!=teamColor) {{
                             return true;
                         }
                         //game interviews usually have programming questions
@@ -295,10 +296,10 @@ public class ChessGame {
         while(row<9){
             while(col<9){
                 if(board.getPiece(new ChessPosition(row, col)) != null){
-                    if(board.getPiece(new ChessPosition(row, col)).getTeamColor()==teamColor){
-                        if(validMoves( new ChessPosition(row, col)) != null  && !validMoves(new ChessPosition(row,col)).isEmpty()){
+                    if(board.getPiece(new ChessPosition(row, col)).getTeamColor()==teamColor
+                            && validMoves( new ChessPosition(row, col)) != null
+                            && !validMoves(new ChessPosition(row,col)).isEmpty()){
                             return false;
-                        }
                     }
                 }
                 col++;
@@ -325,13 +326,12 @@ public class ChessGame {
         int coll = 1;
         while(rows<9){
             while(coll<9){
-                if(board.getPiece(new ChessPosition(rows, coll)) != null){
-                    if(board.getPiece(new ChessPosition(rows, coll)).getTeamColor()==teamColor){
-                        //
-                        if(validMoves( new ChessPosition(rows, coll)) !=null && !validMoves(new ChessPosition(rows,coll)).isEmpty()){
+                if(board.getPiece(new ChessPosition(rows, coll)) != null
+                        &&board.getPiece(new ChessPosition(rows, coll)).getTeamColor()==teamColor){
+                        if(validMoves( new ChessPosition(rows, coll)) !=null
+                                && !validMoves(new ChessPosition(rows,coll)).isEmpty()){
                             return false;
                         }
-                    }
                 }
                 coll++;
             }

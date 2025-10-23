@@ -59,12 +59,14 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-
-    public Collection<ChessMove> pawnPieceMoves(ChessBoard board, ChessPosition myPosition){
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        // mine throw new RuntimeException("Not implemented");
+        //this is how every piece knows to move
         int row = myPosition.getRow();
-        Collection<ChessMove> colle = new ArrayList<>();
         int col = myPosition.getColumn();
+        Collection<ChessMove> colle = new ArrayList<>();
         if (pieceType.equals(PieceType.PAWN) && pieceColor.equals(pieceColor.WHITE)){
+
             if(checkCANmove(board,row+1, col)){
                 if(row >= 7){
                     colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col), PieceType.QUEEN));
@@ -74,8 +76,11 @@ public class ChessPiece {
                 }
                 else{colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col), null));
                 }
-                if(row == 2 && checkCANmove(board,row+2, col)){
-                    colle.add(new ChessMove(myPosition, new ChessPosition(row+2, col),null));}}
+            if(row == 2 && checkCANmove(board,row+2, col)){
+                    colle.add(new ChessMove(myPosition, new ChessPosition(row+2, col),null));
+                }
+            }
+            //left
             if(checkFORenemy(board, row+1, col-1)) {
                 if(row >= 7){
                     colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col-1), PieceType.QUEEN));
@@ -94,11 +99,19 @@ public class ChessPiece {
                     colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), PieceType.ROOK));
                     colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), PieceType.BISHOP));
                 }
-                else{colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), null));}}
+                else{colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), null));
+                }
+            }
+            //en passant
             if(checkFORenemy(board,row,col+1) && row == 5 && checkCANmove(board,row+1,col+1)){
-                colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), null));}
+                //unsure about the 5
+                colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col+1), null));
+            }
             if(checkFORenemy(board,row,col-1) && row == 5 && checkCANmove(board,row+1,col-1) ){
-                colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col-1), null));}}
+                colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col-1), null));
+            }
+        }
+
         if (pieceType.equals(PieceType.PAWN) && pieceColor.equals(pieceColor.BLACK)){
             if(checkCANmove(board,row-1, col)){
                 if(row <= 2){
@@ -111,6 +124,7 @@ public class ChessPiece {
                 if(row == 7 && checkCANmove(board,row-2, col)){
                     colle.add(new ChessMove(myPosition, new ChessPosition(row-2, col),null));
                 }}
+            //left
             if(checkFORenemy(board, row-1, col-1)) {
                 if(row <= 2){
                     colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), PieceType.QUEEN));
@@ -118,8 +132,10 @@ public class ChessPiece {
                     colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), PieceType.ROOK));
                     colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), PieceType.BISHOP));
                 }
-                else{colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), null));}
+                else{colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), null));
+                }
             }
+            //right
             if(checkFORenemy(board, row-1, col+1)) {
                 if(row <= 2){
                     colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), PieceType.QUEEN));
@@ -130,10 +146,16 @@ public class ChessPiece {
                 else{colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), null));
                 }
             }
+            //en passant
             if(checkFORenemy(board,row,col+1) && board.getPiece(new ChessPosition(row, col+1)).getPieceType() == PieceType.PAWN && row == 4 && checkCANmove(board,row-1,col+1) ){
-                colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), null));}
+                //unsure about the 5
+                colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col+1), null));
+            }
             if(checkFORenemy(board,row,col-1) && row == 4 && checkCANmove(board,row-1,col-1) ){
-                colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), null));}}
+                colle.add(new ChessMove(myPosition, new ChessPosition(row-1,col-1), null));
+            }
+        }
+
         if (pieceType.equals(PieceType.KING)){
             if(checkCANmove(board,row+1, col) || checkFORenemy(board,row+1, col)){
                 colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col),null));
@@ -160,15 +182,7 @@ public class ChessPiece {
                 colle.add(new ChessMove(myPosition, new ChessPosition(row+1,col-1),null));
             }
         }
-        return colle;
-    }
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
-        Collection<ChessMove> colle = new ArrayList<>();
-        if (pieceType.equals(PieceType.PAWN)){
-           return pawnPieceMoves(board, myPosition);
-        }
+
         if (pieceType.equals(PieceType.ROOK)){
             int newro = row;
             int newco = col;

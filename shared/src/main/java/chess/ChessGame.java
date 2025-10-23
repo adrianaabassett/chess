@@ -58,12 +58,8 @@ public class ChessGame {
        // boolean doublejump = false;
         Collection<ChessMove> moves = new ArrayList<>();
         TeamColor ourColor = board.getPiece(startPosition).getTeamColor();
-
-
         ChessBoard savingBoard = new ChessBoard();
         savingBoard = copyBoard(board);
-
-
         for(ChessMove current: board.getPiece(startPosition).pieceMoves(board,startPosition)){
             boolean jumpsIntoNull = board.getPiece(current.getEndPosition()) == null;
             board = copyBoard(savingBoard);

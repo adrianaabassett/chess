@@ -154,6 +154,86 @@ public class ChessPiece {
     }
     return colle;
     }
+
+
+
+
+
+    public Collection<ChessMove> queenPieceMoves(ChessBoard board, ChessPosition myPosition) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        Collection<ChessMove> colle = new ArrayList<>();
+        int newrow = row;
+        int newco = col;
+        while (checkCANmove(board,newrow+1, newco)) {
+            newrow++;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow, newco), null));
+        }
+        if(checkFORenemy(board,newrow+1,newco)){
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow+1, newco), null));
+        }
+        newrow = row;
+        newco = col;
+        while (checkCANmove(board,newrow-1, newco)){ newrow--;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
+        }
+        if(checkFORenemy(board,newrow-1,newco)){
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow-1, newco), null));
+        }
+        newrow = row;
+        newco = col;
+        while (checkCANmove(board,newrow, newco+1)){newco++;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
+        }
+        if(checkFORenemy(board,newrow,newco+1)){
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow, newco+1), null));
+        }
+        newrow = row;
+        newco = col;
+        while (checkCANmove(board,newrow, newco-1)){newco--;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
+        }
+        if(checkFORenemy(board,newrow,newco-1)){
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow, newco-1), null));
+        }
+        newrow = row;
+        newco = col;
+        while (checkCANmove(board,newrow+1, newco+1)){
+            newrow++;
+            newco++;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
+        }
+        if(checkFORenemy(board,newrow+1, newco+1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow+1, newco+1),null));}
+        newrow = row;
+        newco = col;
+        while (checkCANmove(board,newrow-1, newco-1)){
+            newrow--;
+            newco--;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
+        }
+        if(checkFORenemy(board,newrow-1, newco-1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow-1, newco-1),null));}
+
+        newrow = row;
+        newco = col;
+        while (checkCANmove(board,newrow-1, newco+1)){
+            newco++;
+            newrow--;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
+        }
+        if(checkFORenemy(board,newrow-1, newco+1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow-1, newco+1),null));}
+
+        newrow = row;
+        newco = col;
+        while (checkCANmove(board,newrow+1, newco-1)){
+            newco--;
+            newrow++;
+            colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
+        }
+        if(checkFORenemy(board,newrow+1, newco-1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow+1, newco-1),null));}
+
+        return colle;
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
@@ -263,74 +343,7 @@ public class ChessPiece {
         }
 
         if (pieceType.equals(PieceType.QUEEN)){
-                int newrow = row;
-                int newco = col;
-                while (checkCANmove(board,newrow+1, newco)) {
-                    newrow++;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow, newco), null));
-                }
-                if(checkFORenemy(board,newrow+1,newco)){
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow+1, newco), null));
-                }
-                newrow = row;
-                newco = col;
-                while (checkCANmove(board,newrow-1, newco)){ newrow--;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
-                }
-                if(checkFORenemy(board,newrow-1,newco)){
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow-1, newco), null));
-                }
-                newrow = row;
-                newco = col;
-                while (checkCANmove(board,newrow, newco+1)){newco++;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
-                }
-                if(checkFORenemy(board,newrow,newco+1)){
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow, newco+1), null));
-                }
-                newrow = row;
-                newco = col;
-                while (checkCANmove(board,newrow, newco-1)){newco--;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
-                }
-                if(checkFORenemy(board,newrow,newco-1)){
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow, newco-1), null));
-                }
-                newrow = row;
-                newco = col;
-                while (checkCANmove(board,newrow+1, newco+1)){
-                    newrow++;
-                    newco++;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
-                }
-                if(checkFORenemy(board,newrow+1, newco+1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow+1, newco+1),null));}
-                newrow = row;
-                newco = col;
-                while (checkCANmove(board,newrow-1, newco-1)){
-                    newrow--;
-                    newco--;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
-                }
-                if(checkFORenemy(board,newrow-1, newco-1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow-1, newco-1),null));}
-
-                newrow = row;
-                newco = col;
-                while (checkCANmove(board,newrow-1, newco+1)){
-                    newco++;
-                    newrow--;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
-                }
-                if(checkFORenemy(board,newrow-1, newco+1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow-1, newco+1),null));}
-
-                newrow = row;
-                newco = col;
-                while (checkCANmove(board,newrow+1, newco-1)){
-                    newco--;
-                    newrow++;
-                    colle.add(new ChessMove(myPosition, new ChessPosition(newrow,newco),null));
-                }
-                if(checkFORenemy(board,newrow+1, newco-1)){colle.add(new ChessMove(myPosition, new ChessPosition(newrow+1, newco-1),null));}
-
+            colle = queenPieceMoves(board, myPosition);
 
 
 

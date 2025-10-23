@@ -1,9 +1,12 @@
 package server;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
+import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import dataaccess.exceptions.InvalidID;
+import dataaccess.exceptions.UnauthorizedException;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.GameData;
@@ -19,10 +22,10 @@ public class Handler {
 
 
     public Handler(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
-        Service service = new Service(userDAO, gameDAO, authDAO);
+        service = new Service(userDAO, gameDAO, authDAO);
     }
     //it is an Authdata because thats what the register result has
-    public void registerHandler(Context ctx) throws DataAccessException{
+    public void registerHandler(Context ctx) throws DataAccessException, BadRequest {
         //the context object has a body which is the json string
         RegisterRequest regReq = new Gson().fromJson(ctx.body(),RegisterRequest.class);
         RegisterResult registerResult = service.register(regReq);
@@ -36,28 +39,30 @@ public class Handler {
 
     }
 
-    public void loginUser(Context ctx) throws DataAccessException{
+    public void loginUser(Context ctx) throws DataAccessException, UnauthorizedException, BadRequest, InvalidID {
         UserData userData = new Gson().fromJson(ctx.body(),UserData.class);
         AuthData authData = service.loginUser(userData);
         ctx.status(200);
     }
 
-    public void logoutUser(Context ctx) throws DataAccessException{
+    public void logoutUser(Context ctx) throws DataAccessException, UnauthorizedException {
            String authToken = ctx.header("Authorization");
            service.logoutUser(authToken);
            ctx.status(200);
     }
 
-    public void createGame(Context ctx) throws DataAccessException{
+    public void createGame(Context ctx) throws DataAccessException, UnauthorizedException {
         GameData gameData = new Gson().fromJson(ctx.body(),GameData.class);
         GameData newGame = service.createGame(gameData.gameName(),ctx.header("Authorization"));
         ctx.status(200);
     }
 
-    public String listGames(Context ctx) throws DataAccessException{
+    public void listGames(Context ctx) throws DataAccessException{
+        new Gson().toJson(service.listGames(ctx.header("Authorization")));
         ctx.status(200);
-        return new Gson().toJson(service.listGames(ctx.header("Authorization")));
-
+//        public String listGames(Context ctx) throws DataAccessException{
+//            ctx.status(200);
+//            return new Gson().toJson(service.listGames(ctx.header("Authorization")));
     }
     public void joinGame(Context ctx) throws DataAccessException{
         JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest.class);

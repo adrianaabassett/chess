@@ -239,13 +239,11 @@ public class ChessGame {
         while(row<9){
             while (col<9){
                 checkPiece = board.getPiece(new ChessPosition(row, col));
+                if(checkPiece != null && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null&& checkPiece.getTeamColor()!=teamColor) {
                     //cycle through all possible moves of every piece;
                     Collection<ChessMove> possibleMoves= checkPiece.pieceMoves(board, new ChessPosition(row, col));
                     for(ChessMove current : possibleMoves){
-                        if (current.getEndPosition().equals(kingPosition)
-                                && checkPiece != null
-                                && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null
-                                && checkPiece.getTeamColor()!=teamColor) {{
+                        if (current.getEndPosition().equals(kingPosition)) {
                             return true;
                         }
                         //game interviews usually have programming questions

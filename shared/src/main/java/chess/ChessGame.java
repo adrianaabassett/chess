@@ -117,10 +117,6 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        //this is permanent dont use it in valid
-        //in check no piece take own piec
-//        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-//        board.addPiece(move.getStartPosition(),null);
         boolean doublejump = false;
         if (move.getStartPosition().getRow() +2== move.getEndPosition().getRow()
                 ||move.getStartPosition().getRow() -2 == move.getEndPosition().getRow() )

@@ -151,36 +151,36 @@ public class ChessGame {
                     int col = move.getStartPosition().getColumn();
                     int erow = move.getEndPosition().getRow();
                     int ecol= move.getEndPosition().getColumn();
+                    if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE ){
                         //checks it moves up positive
+                        if(row == 5 && row +1 == erow){
                             //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
-                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE &&
-                                    row == 5 && row +1 == erow &&
-                                    col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
+                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
                                     && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.BLACK){
                                 //removes the piece its passing
                                 board.addPiece(new ChessPosition(row,col+1 ) ,null);
                             }
-                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE &&
-                                    row == 5 && row +1 == erow &&
-                                    col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
+                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
                                     && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.BLACK){
                                 board.addPiece(new ChessPosition(row,col-1 ) ,null);
                             }
+                        }
 
+                    }
+                    if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK ){
                         //checks it moves up positive
+                        if(row == 4 && row -1 == erow){
                             //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
-                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK && row == 4 && row -1 == erow
-                        && col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
+                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
                                     && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.WHITE){
                                 board.addPiece(new ChessPosition(row,col+1 ) ,null);
                             }
-                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK && row == 4 && row -1 == erow
-                                    && col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
+                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
                                     && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.WHITE){
                                 board.addPiece(new ChessPosition(row,col-1 ) ,null);
                             }
-
-
+                        }
+                    }
                 }
                 //end en passant
                 if(move.getPromotionPiece() == null){
@@ -239,9 +239,8 @@ public class ChessGame {
         while(row<9){
             while (col<9){
                 checkPiece = board.getPiece(new ChessPosition(row, col));
-                if(checkPiece != null && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null&& checkPiece.getTeamColor()!=teamColor) {
-                    //cycle through all possible moves of every piece;
-                    return unNestBool(board, checkPiece, row, col, kingPosition);
+                if(unNestKing(checkPiece, board, row, col, kingPosition, teamColor)){
+                    return true;
                 }
                 col++;
             }
@@ -250,8 +249,9 @@ public class ChessGame {
         }
         return false;
     }
-
-    public boolean unNestBool(ChessBoard board, ChessPiece checkPiece, int row, int col, ChessPosition kingPosition){
+    public boolean unNestKing(ChessPiece checkPiece, ChessBoard board, int row, int col, ChessPosition kingPosition, TeamColor teamColor){
+    if(checkPiece != null && checkPiece.pieceMoves(board, new ChessPosition(row, col)) != null&& checkPiece.getTeamColor()!=teamColor) {
+        //cycle through all possible moves of every piece;
         Collection<ChessMove> possibleMoves= checkPiece.pieceMoves(board, new ChessPosition(row, col));
         for(ChessMove current : possibleMoves){
             if (current.getEndPosition().equals(kingPosition)) {
@@ -260,6 +260,7 @@ public class ChessGame {
             //game interviews usually have programming questions
             //every game company needs a different type of person
         }
+    }
         return false;
     }
 

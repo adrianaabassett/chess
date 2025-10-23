@@ -151,35 +151,38 @@ public class ChessGame {
                     int col = move.getStartPosition().getColumn();
                     int erow = move.getEndPosition().getRow();
                     int ecol= move.getEndPosition().getColumn();
-                    if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE ){
                         //checks it moves up positive
-                        if(row == 5 && row +1 == erow){
                             //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
-                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
+                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE
+                                    && row == 5 && row +1 == erow && col+1 == ecol
+                                    && board.getPiece(new ChessPosition(row,col+1))!=null
                                     && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.BLACK){
                                 //removes the piece its passing
                                 board.addPiece(new ChessPosition(row,col+1 ) ,null);
                             }
-                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
+                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE
+                    &&row == 5 && row +1 == erow && col-1 == ecol
+                                    && board.getPiece(new ChessPosition(row,col-1))!=null
                                     && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.BLACK){
                                 board.addPiece(new ChessPosition(row,col-1 ) ,null);
-                            }
-                        }
+
 
                     }
                     if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK ){
                         //checks it moves up positive
-                        if(row == 4 && row -1 == erow){
                             //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
-                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
+                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK && row == 4
+                                    && row -1 == erow&&col+1 == ecol
+                                    && board.getPiece(new ChessPosition(row,col+1))!=null
                                     && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.WHITE){
                                 board.addPiece(new ChessPosition(row,col+1 ) ,null);
                             }
-                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
+                            if(board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK
+                                    && row == 4 && row -1 == erow&&col-1 == ecol
+                                    && board.getPiece(new ChessPosition(row,col-1))!=null
                                     && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.WHITE){
                                 board.addPiece(new ChessPosition(row,col-1 ) ,null);
                             }
-                        }
                     }
                 }
                 //end en passant

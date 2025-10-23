@@ -51,7 +51,7 @@ public class Handler {
            ctx.status(200);
     }
 
-    public void createGame(Context ctx) throws DataAccessException, UnauthorizedException {
+    public void createGame(Context ctx) throws DataAccessException, UnauthorizedException, BadRequest {
         GameData gameData = new Gson().fromJson(ctx.body(),GameData.class);
         GameData newGame = service.createGame(gameData.gameName(),ctx.header("Authorization"));
         ctx.status(200);
@@ -64,7 +64,7 @@ public class Handler {
 //            ctx.status(200);
 //            return new Gson().toJson(service.listGames(ctx.header("Authorization")));
     }
-    public void joinGame(Context ctx) throws DataAccessException{
+    public void joinGame(Context ctx) throws DataAccessException, BadRequest, UnauthorizedException, InvalidID {
         JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest.class);
         service.joinGame(joinGameRequest.authToken(),joinGameRequest.playerColor(),joinGameRequest.gameID());
         ctx.status(200);

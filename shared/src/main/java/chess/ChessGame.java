@@ -58,17 +58,11 @@ public class ChessGame {
        // boolean doublejump = false;
         Collection<ChessMove> moves = new ArrayList<>();
         TeamColor ourColor = board.getPiece(startPosition).getTeamColor();
-        //creating collection to return
-//        if(board.getPiece(startPosition) ==null){
-//           return null;
-//        }
-        //checking that there is a piece there
+
+
         ChessBoard savingBoard = new ChessBoard();
         savingBoard = copyBoard(board);
-        //creating a saved board to reference later
-        //for each of the possible moves of that one piece
-        //reset the board, make the move
-        //testing each possible move to make sure it wont put it in check
+
 
         for(ChessMove current: board.getPiece(startPosition).pieceMoves(board,startPosition)){
             boolean jumpsIntoNull = board.getPiece(current.getEndPosition()) == null;
@@ -79,10 +73,7 @@ public class ChessGame {
             //en passant possible next turn if row +-2
             //if its a pawn
             if( testingPiece != null && testingPiece.getPieceType() == ChessPiece.PieceType.PAWN){
-                //en passant possible next turn if row +-2
-//                if(startPosition.getRow() -2 == current.getEndPosition().getRow()||startPosition.getRow() +2 == current.getEndPosition().getRow() ){
-//                    doublejump = true;
-//                }
+
                 //if its making a diagonal move then it must go left or right
                 if(startPosition.getColumn()+1 == current.getEndPosition().getColumn() ||  startPosition.getColumn() -1 == current.getEndPosition().getColumn()){
                     //where it jumps
@@ -118,9 +109,6 @@ public class ChessGame {
 //        returning board to former state and returning moves
         board = copyBoard(savingBoard);
 
-//         if (doublejump)
-//         {isPassantNext = true;}
-//         else{isPassantNext = false;}
         return moves;
     }
 
@@ -333,22 +321,22 @@ public class ChessGame {
         if(isInCheck(teamColor)){
             return false;
         }
-        int row = 1;
-        int col = 1;
-        while(row<9){
-            while(col<9){
-                if(board.getPiece(new ChessPosition(row, col)) != null){
-                    if(board.getPiece(new ChessPosition(row, col)).getTeamColor()==teamColor){
+        int rows = 1;
+        int coll = 1;
+        while(rows<9){
+            while(coll<9){
+                if(board.getPiece(new ChessPosition(rows, coll)) != null){
+                    if(board.getPiece(new ChessPosition(rows, coll)).getTeamColor()==teamColor){
                         //
-                        if(validMoves( new ChessPosition(row, col)) !=null && !validMoves(new ChessPosition(row,col)).isEmpty()){
+                        if(validMoves( new ChessPosition(rows, coll)) !=null && !validMoves(new ChessPosition(rows,coll)).isEmpty()){
                             return false;
                         }
                     }
                 }
-                col++;
+                coll++;
             }
-            col =1;
-            row++;
+            coll =1;
+            rows++;
         }
         //do they not have any possible moves
         return true;

@@ -18,7 +18,7 @@ import service.Service;
 import java.util.Map;
 
 public class Handler {
-    private static final Logger log = LoggerFactory.getLogger(Handler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Handler.class);
     //UserService userService = new UserService;
     Service service ;
 

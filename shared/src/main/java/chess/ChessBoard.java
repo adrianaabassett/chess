@@ -13,9 +13,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    //mine: creating a 2d array for the board and they start at 1 and we need a 64 board
     private ChessPiece[][] board = new ChessPiece[9][9];
-    //end mine
+
     public ChessBoard() {
 
     }
@@ -52,14 +51,7 @@ public class ChessBoard {
         }
         //objjj is being cast into "that"
         ChessBoard that = (ChessBoard) objjj;
-//        for (int row = 1; row <= 8; row++) {
-//            for (int col = 1; col <= 8; col++) {
-//                ChessPosition pos = new ChessPosition(row,col);
-//                if (getPiece(pos) != that.getPiece(pos)) {
-//                    return false;
-//                }
-//            }
-//            }
+//
             return Objects.deepEquals(board, that.board);
             //returns yes if the contents are also equal
 
@@ -83,8 +75,6 @@ public class ChessBoard {
        //supposed to set up board to default state
         //mine
         board = new ChessPiece[9][9];
-        //ChessPosition kingpos = ;
-        //ChessPiece king = ;
 
 
         addPiece(new ChessPosition(8,1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));

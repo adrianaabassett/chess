@@ -26,10 +26,9 @@ public class ServiceTest {
     @Test
     @DisplayName("registering a user and it returns a register result to handler")
     public void registerPositive() throws DataAccessException, BadRequest, AlreadyTakenException {
-        var userTest = new UserData("joe", "jjj", "chicken");
-        var authTest = userService.register(new RegisterRequest("joe", "jjj", "chicken"));
-        assertNotNull(authTest.authToken());
-        assertEquals("joe", authTest.username());
+        var authTests = userService.register(new RegisterRequest("joe", "jjj", "chicken"));
+        assertNotNull(authTests.authToken());
+        assertEquals("joe", authTests.username());
 
     }
     //try to register a user without a password

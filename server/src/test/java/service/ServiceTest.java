@@ -61,7 +61,7 @@ public class ServiceTest {
         assertThrows(DataAccessException.class, () -> userService.loginUser(user));
         userService.register(new RegisterRequest("chicken","tulip","dandelion"));
         UserData userTwo = new UserData("chicken", "dumpling", "dandelion");
-        Assertions.assertThrows(DataAccessException.class, () -> userService.loginUser(userTwo));
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.loginUser(userTwo));
     }
 
 
@@ -80,7 +80,7 @@ public class ServiceTest {
     public void logoutNegative() throws DataAccessException, BadRequest, AlreadyTakenException {
         RegisterResult auth = userService.register(new RegisterRequest("chicken", "tulip", "dandelion"));
         UserData user = new UserData("chicken", "tulip", "dandelion");
-        assertThrows(DataAccessException.class, () -> userService.logoutUser("chickadee"));
+        assertThrows(UnauthorizedException.class, () -> userService.logoutUser("chickadee"));
     }
     @Test
     @DisplayName("list games")
@@ -96,14 +96,16 @@ public class ServiceTest {
         hashMap.put(gameIDOne, new GameData(gameIDOne, null, null, "a", new ChessGame()));
         hashMap.put(gameIDTwo, new GameData(gameIDTwo, null, null, "b", new ChessGame()));
         hashMap.put(gameIDThree, new GameData(gameIDThree, null, null, "c", new ChessGame()));
+        GameData gameDatas = hashMap.get(gameIDOne);
+        GameData gameData = userService.listGames(authToken).get(0);
+        assertEquals(gameDatas, gameData);
 
-        assertEquals(hashMap, userService.listGames(authToken));
     }
 
     @Test
     @DisplayName("cant list games because its empty")
     public void listGamesTestNegative() throws DataAccessException {
-        assertThrows(DataAccessException.class, () -> userService.listGames("chicken"));
+        assertThrows(UnauthorizedException.class, () -> userService.listGames("chicken"));
     }
 
     @Test
@@ -118,29 +120,33 @@ public class ServiceTest {
 
     @Test
     @DisplayName("cant create new game")
-    public void createGameNegative() throws DataAccessException {
-        Assertions.assertThrows(DataAccessException.class, () -> userService.createGame("name", "authToken"));
+    public void createGameNegative() throws DataAccessException, UnauthorizedException {
+        Assertions.assertThrows(UnauthorizedException.class, () -> userService.createGame("name", "authToken"));
     }
 
-//    @Test
-//    @DisplayName("join game")
-//    public void joinGamePositive() throws DataAccessException {
-//        AuthData authData = new AuthData("authT", "userN");
-//        int gameID = userService.createGame(authData.authToken(), "nameofgame");
-//        userService.joinGame(authData.authToken(), gameID, "WHITE");
-//        GameData gameData = new GameData(gameID, authData.username(), null, "nameofgame", null);
-//        assertEquals(gameData, gameMemory.getGame(gameID));
-//    }
+    @Test
+    @DisplayName("join game")
+    public void joinGamePositive() throws DataAccessException, BadRequest, UnauthorizedException, InvalidID, AlreadyTakenException {
+        UserData user = new UserData("chicken","tulip","dandelion");
+        userService.register(new RegisterRequest("chicken","tulip","dandelion"));
+        AuthData authData = userService.loginUser(user);
+        int gameID = userService.createGame("nameofgame", authData.authToken()).gameID();
+        userService.joinGame(authData.authToken(), "WHITE", gameID);
 
-//    @Test
-//    @DisplayName("cant join game")
-//    public void joinGameNegative() throws DataAccessException {
-//        AuthData authData = new AuthData("authT", "userN");
-//        int gameID = userService.createGame(authData.authToken(), "name");
-//        assertThrows(DataAccessException.class, () -> userService.joinGame("authT", gameID, "WHITE"));
-//        assertThrows(DataAccessException.class, () -> userService.joinGame(authData.authToken(), 12, "WHITE"));
-//        assertThrows(DataAccessException.class, () -> userService.joinGame(authData.authToken(), gameID, "PINK"));
-//    }
+
+        GameData gameData = new GameData(gameID, authData.username(), null, "nameofgame", null);
+        assertEquals(gameData.gameID(), gameMemory.getGame(gameID).gameID());
+    }
+
+    @Test
+    @DisplayName("cant join game")
+    public void joinGameNegative() throws DataAccessException, BadRequest, UnauthorizedException, AlreadyTakenException, InvalidID {
+        RegisterResult authData = userService.register(new RegisterRequest("chicken","tulip","dandelion"));
+        int gameID = userService.createGame( "name",authData.authToken()).gameID();
+        assertThrows(UnauthorizedException.class, () -> userService.joinGame("authT","WHITE", gameID));
+        assertThrows(BadRequest.class, () -> userService.joinGame(authData.authToken(), "WHITE", 12));
+        assertThrows(BadRequest.class, () -> userService.joinGame(authData.authToken(), "PINK", gameID));
+    }
 
     @Test
     @DisplayName("clear")

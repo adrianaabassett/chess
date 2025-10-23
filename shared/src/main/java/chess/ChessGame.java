@@ -71,7 +71,8 @@ public class ChessGame {
             if( testingPiece != null && testingPiece.getPieceType() == ChessPiece.PieceType.PAWN){
 
                 //if its making a diagonal move then it must go left or right
-                if(startPosition.getColumn()+1 == current.getEndPosition().getColumn() ||  startPosition.getColumn() -1 == current.getEndPosition().getColumn()){
+                if(startPosition.getColumn()+1 == current.getEndPosition().getColumn()
+                        ||  startPosition.getColumn() -1 == current.getEndPosition().getColumn()){
                     //where it jumps
                     //most likely change
                     if(jumpsIntoNull && isPassantNext){
@@ -120,7 +121,8 @@ public class ChessGame {
 //        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
 //        board.addPiece(move.getStartPosition(),null);
         boolean doublejump = false;
-        if (move.getStartPosition().getRow() +2== move.getEndPosition().getRow() ||move.getStartPosition().getRow() -2 == move.getEndPosition().getRow() )
+        if (move.getStartPosition().getRow() +2== move.getEndPosition().getRow()
+                ||move.getStartPosition().getRow() -2 == move.getEndPosition().getRow() )
         {doublejump = true;}
         if(move.getStartPosition() == null ||
                 move.getEndPosition().getRow()>8||
@@ -153,11 +155,13 @@ public class ChessGame {
                         //checks it moves up positive
                         if(row == 5 && row +1 == erow){
                             //checks that it moves to the right, there is a piece next to it, and that the piece is on its own team
-                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.BLACK){
+                            if(col+1 == ecol && board.getPiece(new ChessPosition(row,col+1))!=null
+                                    && board.getPiece(new ChessPosition(row,col+1)).getTeamColor() == TeamColor.BLACK){
                                 //removes the piece its passing
                                 board.addPiece(new ChessPosition(row,col+1 ) ,null);
                             }
-                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.BLACK){
+                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
+                                    && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.BLACK){
                                 board.addPiece(new ChessPosition(row,col-1 ) ,null);
                             }
                         }
@@ -171,11 +175,11 @@ public class ChessGame {
                                 //removes the piece its passing
                                 board.addPiece(new ChessPosition(row,col+1 ) ,null);
                             }
-                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.WHITE){
+                            if(col-1 == ecol && board.getPiece(new ChessPosition(row,col-1))!=null
+                                    && board.getPiece(new ChessPosition(row,col-1)).getTeamColor() == TeamColor.WHITE){
                                 board.addPiece(new ChessPosition(row,col-1 ) ,null);
                             }
                         }
-
                     }
                 }
                 //end en passant

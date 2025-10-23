@@ -109,7 +109,8 @@ public class Service {
         }
     }
 
-    public void joinGame(String authToken, String playerColor, Integer gameID) throws DataAccessException, InvalidID, BadRequest, UnauthorizedException {
+    public void joinGame(String authToken, String playerColor, Integer gameID)
+            throws DataAccessException, InvalidID, BadRequest, UnauthorizedException {
         if(playerColor == null|| gameID==null|| gameDAO.getGame(gameID)==null ){
             throw new BadRequest("bad game idt");
         }

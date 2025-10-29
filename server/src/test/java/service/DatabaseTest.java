@@ -26,6 +26,48 @@ public class DatabaseTest {
     public DatabaseTest() throws ResponseException, DataAccessException {
     }
 
+
+    //UserSQL
+    //clear
+
+    //create user
+    // negative
+
+    //getUser
+    //negative
+
+
+    //AuthSQL
+    //clear
+
+    //create auth
+    //negative
+
+    //get auth
+    //negative
+
+    //deleteauth
+    //negative
+
+
+    //GameSQL
+    //clear
+
+    //create game
+    //negative
+
+    //getgame
+    //negative
+
+    //list games
+    //negtive
+
+    //get username
+    //negative
+
+    //updategame
+    //negative
+
     @Test
     @DisplayName("registering a user and it returns a register result to handler")
     public void registerPositive() throws DataAccessException, BadRequest, AlreadyTakenException {

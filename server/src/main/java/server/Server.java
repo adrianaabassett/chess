@@ -1,13 +1,36 @@
 package server;
 import dataaccess.*;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.ResponseException;
 import io.javalin.*;
 
 public class Server {
 
     //create the hashmap memories here so that there will only be one of each
-    UserDAO memoryUser = new MemoryUser();
+    UserDAO memoryUser;
+    {
+        try {
+            memoryUser = new DatabaseSqlUser();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     GameDAO memoryGame = new MemoryGame();
-    AuthDAO memoryAuth = new MemoryAuth();
+    AuthDAO memoryAuth;
+
+    {
+        try {
+            memoryAuth = new DatabaseSqlAuth();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     ///GameDAO memoryGame= new MemoryGame();
     ///   AuthDAO memoryAuth = new MemoryAuth();
 

@@ -44,6 +44,29 @@ public class Service {
         else{
             throw new AlreadyTakenException("this username already exists");
         }
+//        //a bcript to make a hash of this for an immutable version for my library
+//        var hashPwd = BCrypt.hashpw(user.password(),BCrypt,gensalt());
+//        var storeNewUser= new Userdata(user.username(),user.email(),hashpwd);
+//        dataAccess.createUser(user);
+//        var authData = new AuthData();
+//        user.username(), generateAuthToken();
+//
+//
+//        //login
+//        boolean verifyUser(String username, String providedClearTextPassword) {
+//            // read the previously hashed password from the database
+//            var hashedPassword = readHashedPasswordFromDatabase(username);
+//
+//            return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+//        }
+
+        //server communicaticesto json
+        //service has logic and  takes that and puts it into database. This is where the game of chess happens
+        // dataaccess is where the data is stored
+        //encription is in service since server is just serialization
+
+        //theres a password example up in the phase 4 instrcutction
+
     }
 
     public AuthData loginUser(UserData userData) throws DataAccessException, UnauthorizedException, BadRequest, InvalidID {

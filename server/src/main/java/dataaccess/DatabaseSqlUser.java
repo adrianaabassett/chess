@@ -52,13 +52,14 @@ public class DatabaseSqlUser implements UserDAO {
     }
 
     public void createUser(UserData userData) throws DataAccessException {
-        var statement = "INSERT INTO authData (Username, Password, Email) VALUES (?, ?, ?)";
+        var statement = "INSERT INTO user (Username, Password, Email) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setString(1,userData.username());
                 ps.setString(2,userData.password());
                 ps.setString(3,userData.email());
                 ps.executeUpdate();
+                //here is thr problem
             }
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());

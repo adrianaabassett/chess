@@ -38,10 +38,6 @@ public class MemoryGame implements GameDAO {
         return newGames;
     }
 
-//    public String toStringListGames(AuthData authData) throws DataAccessException{
-//        GamesList games = new GamesList(gameService.listGames(authToken));
-//
-//    }
 
     @Override
     public String getUsername(String playerColor, int gameID) throws DataAccessException{

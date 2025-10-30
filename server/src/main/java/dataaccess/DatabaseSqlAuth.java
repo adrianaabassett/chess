@@ -95,20 +95,4 @@ public class DatabaseSqlAuth implements AuthDAO {
         }
     }
 
-//
-//    private void getAuthExecuteUpdate(String statement, Object... params) throws ResponseException, SQLException {
-//        try (var conn = DriverManager.getConnection("jdbc:mysql://localhost:3306", "root", "monkeypie")) {
-//            conn.setCatalog("pet_store");
-//            try (var preparedStatement = conn.prepareStatement("SELECT id, name, type from auth")) {
-//                try (var rs = preparedStatement.executeQuery()) {
-//                    while (rs.next()) {
-//                        var id = rs.getInt("id");
-//                        var name = rs.getString("name");
-//                        var type = rs.getString("type");
-//                        System.out.printf("id: %d, name: %s, type: %s%n", id, name, type);
-//                    }
-//                }
-//            }
-//        }
-//    }
 }

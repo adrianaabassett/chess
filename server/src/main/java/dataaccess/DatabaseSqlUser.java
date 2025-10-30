@@ -1,8 +1,10 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.ResponseException;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,7 +26,7 @@ public class DatabaseSqlUser implements UserDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException("unable to configure database");
+            throw new DataAccessException("unable to configure database");//response exception was here
         }
     }
 
@@ -47,7 +49,7 @@ public class DatabaseSqlUser implements UserDAO {
         } catch (SQLException ex) {
             throw new DataAccessException("failed to clear userTable", ex);
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("failed to get connection");
         }
     }
 
@@ -56,7 +58,8 @@ public class DatabaseSqlUser implements UserDAO {
         try (Connection connection = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setString(1,userData.username());
-                ps.setString(2,userData.password());
+                String safePassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+                ps.setString(2,safePassword);
                 ps.setString(3,userData.email());
                 ps.executeUpdate();
                 //here is thr problem
@@ -66,13 +69,15 @@ public class DatabaseSqlUser implements UserDAO {
         }
     }
 
+
     public UserData getUser(String username) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement("SELECT Username, Password, Email FROM userTable WHERE Username=?")) {
                 ps.setString(1,username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()){
-                        return new UserData(rs.getString("Username"), rs.getString("Password"), rs.getString("Email"));
+                        String decryptedPass =  rs.getString("Password");
+                        return new UserData(rs.getString("Username"),decryptedPass, rs.getString("Email"));
                     }
                     else{
                         return null;

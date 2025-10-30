@@ -33,7 +33,7 @@ public class Handler {
                 RegisterRequest regReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         RegisterResult registerResult = service.register(regReq);
             ctx.status(200);
-//            ctx.result("{}");
+            //ctx.result("{}");
             ctx.json(new Gson().toJson(registerResult));
         //below sets the json, which is the response to the request of the server
         }
@@ -46,7 +46,9 @@ public class Handler {
             ctx.result("{\"message\":\"Error:already taken\"}");
         }
         catch(DataAccessException e){
-            ctx.status(501);}
+            ctx.status(500);//was 501
+        ctx.result("{\"message\":\"Error:"+e.getMessage()+"\"}");
+        }
     }
     public void clearHandler(Context ctx) throws DataAccessException{
         ctx.status(200);
@@ -59,7 +61,7 @@ public class Handler {
             catch(DataAccessException e){
                 //might nned to be changed to unauthorized seperately
                 ctx.status(500);
-                ctx.result("{\"message\":\"Error:"+e.getMessage()+"}");
+                ctx.result("{\"message\":\"Error:"+e.getMessage()+"\"}");
             }
 
     }
@@ -72,7 +74,7 @@ public class Handler {
             ctx.result(new Gson().toJson(authData));
         }
         catch(DataAccessException e){
-            ctx.status(401);
+            ctx.status(500);//was 401
             ctx.result("{\"message\":\"Error:unknown\"}");
         }
         catch(UnauthorizedException e){
@@ -97,7 +99,7 @@ public class Handler {
         ctx.result("{}");
     }
         catch(DataAccessException e){
-                ctx.status(405);
+                ctx.status(500);//was 405
             ctx.result("{\"message\":\"Error:unknown\"}");
         }
         catch(UnauthorizedException e){
@@ -115,7 +117,8 @@ public class Handler {
             return newGame;
         }
         catch(DataAccessException e){
-            ctx.status(405);
+            ctx.status(500);//was 405
+            ctx.result("{\"message\":\"Error:"+e.getMessage()+"\"}");
         }
         catch(UnauthorizedException e){
             ctx.status(401);
@@ -150,7 +153,8 @@ public class Handler {
         ctx.status(200);
             ctx.result("{}");
     }catch(DataAccessException e){
-        ctx.status(405);
+        ctx.status(500);//was 405
+            ctx.result("{\"message\":\"Error:"+e.getMessage()+"\"}");
     }
         catch(BadRequest e){
             ctx.status(400);

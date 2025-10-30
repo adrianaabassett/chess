@@ -7,12 +7,15 @@ import dataaccess.exceptions.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import static org.mindrot.jbcrypt.BCrypt.gensalt;
 
 
 public class Service {
@@ -45,21 +48,9 @@ public class Service {
         else{
             throw new AlreadyTakenException("this username already exists");
         }
-//        //a bcript to make a hash of this for an immutable version for my library
-//        var hashPwd = BCrypt.hashpw(user.password(),BCrypt,gensalt());
-//        var storeNewUser= new Userdata(user.username(),user.email(),hashpwd);
-//        dataAccess.createUser(user);
-//        var authData = new AuthData();
-//        user.username(), generateAuthToken();
+//      c
 //
 //
-//        //login
-//        boolean verifyUser(String username, String providedClearTextPassword) {
-//            // read the previously hashed password from the database
-//            var hashedPassword = readHashedPasswordFromDatabase(username);
-//
-//            return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
-//        }
 
         //server communicaticesto json
         //service has logic and  takes that and puts it into database. This is where the game of chess happens
@@ -77,11 +68,10 @@ public class Service {
         else if (userDAO.getUser(userData.username())==null){
             throw new DataAccessException("error: this username doesnt work");
         }
-        else if (!userDAO.getUser(userData.username()).password().equals(userData.password())){
+        else if (!checkPass(userDAO.getUser(userData.username()).password(), (userData.password()))){//checspass
             throw new UnauthorizedException("error: username and password are incorrect");
         }
 //        else if (userDAO.getUser(userData.username())!=null){
-//
 //        }
         else{
             String authToken = generateRandomString();
@@ -91,7 +81,9 @@ public class Service {
             return authData;
         }
     }
-
+    public boolean checkPass(String encrypted, String clearString){
+        return BCrypt.checkpw(clearString, encrypted);
+    }
     public void logoutUser(String authToken) throws DataAccessException, UnauthorizedException{
         if(authDAO.getAuth(authToken)==null||authToken.isBlank()){
             throw new UnauthorizedException("Error:unable to log out due to invalid authtoken");

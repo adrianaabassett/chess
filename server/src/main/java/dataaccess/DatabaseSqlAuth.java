@@ -5,6 +5,7 @@ import com.mysql.cj.x.protobuf.MysqlxCrud;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.ResponseException;
 import model.AuthData;
+import model.UserData;
 
 import java.sql.*;
 
@@ -51,12 +52,14 @@ public class DatabaseSqlAuth implements AuthDAO {
     }
 
     public void createAuth(AuthData authData) throws DataAccessException {
-        var statement = "INSERT INTO auth (AuthToken, Username) VALUES (?, ?)";
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new DataAccessException("failed to create Auth", ex);
+        Connection conn = DatabaseManager.getConnection();
+        PreparedStatement ps = null;
+        try {
+            ps = conn.prepareStatement("INSERT INTO auth (AuthToken, Username) VALUES (?, ?)");
+            ps.setString(1,authData.authToken());
+            ps.setString(1,authData.username());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -64,6 +67,7 @@ public class DatabaseSqlAuth implements AuthDAO {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement("SELECT Username, AuthToken FROM auth WHERE AuthToken=?")) {
                 //capitalize
+                ps.setString(1,authToken);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()){
                         return new AuthData(authToken, rs.getString("Username"));

@@ -20,7 +20,6 @@ public class Server {
 
     GameDAO memoryGame = new MemoryGame();
     AuthDAO memoryAuth;
-
     {
         try {
             memoryAuth = new DatabaseSqlAuth();

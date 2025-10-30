@@ -2,7 +2,6 @@ package dataaccess;
 
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.ResponseException;
-import model.AuthData;
 import model.UserData;
 
 import java.sql.Connection;
@@ -54,18 +53,22 @@ public class DatabaseSqlUser implements UserDAO {
 
     public void createUser(UserData userData) throws DataAccessException {
         var statement = "INSERT INTO authData (Username, Password, Email) VALUES (?, ?, ?)";
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new DataAccessException("failed to create User", ex);
+        try (Connection connection = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement(statement)) {
+                ps.setString(1,userData.username());
+                ps.setString(2,userData.password());
+                ps.setString(3,userData.email());
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 
     public UserData getUser(String username) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement("SELECT Username, Password, Email FROM user WHERE Username=?")) {
-                //capitalize
+                ps.setString(1,username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()){
                         return new UserData(rs.getString("Username"), rs.getString("Password"), rs.getString("Email"));
@@ -76,7 +79,7 @@ public class DatabaseSqlUser implements UserDAO {
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException("error getting User from database");
+            throw new DataAccessException(e.getMessage());
         }
     }
 

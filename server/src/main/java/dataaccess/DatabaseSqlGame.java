@@ -149,20 +149,22 @@ public class DatabaseSqlGame implements GameDAO {
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setInt(1,gameID);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()&&playerColor.equals("WHITE")){
+                    if(rs.next()){
+                    if(playerColor.equals("WHITE")){
                         return rs.getString("WhiteUserName");
                     }
-                    else if(rs.next()&&playerColor.equals("BLACK")){
+                    else if(playerColor.equals("BLACK")){
                         return rs.getString("BlackUserName");
                     }
                     else{
                         return null;
                     }
-                }
+                }}
             }
         } catch (Exception e) {
             throw new DataAccessException("error getting Username from gameTable database");
         }
+        return null;
     }
 
     public void updateGame(GameData game) throws DataAccessException {

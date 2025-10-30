@@ -141,7 +141,8 @@ public class Service {
         else if (authToken == null || authDAO.getAuth(authToken) == null ){
             throw new UnauthorizedException("Error: null authToken");
         }
-        else if(gameDAO.getUsername(playerColor,gameID)!=null){
+        boolean isNotTaken = gameDAO.getUsername(playerColor,gameID)==null;
+        if(!isNotTaken){
             throw new InvalidID("someone already claimed this color");
         }
         else if(!playerColor.equals("WHITE") && !playerColor.equals("BLACK")){

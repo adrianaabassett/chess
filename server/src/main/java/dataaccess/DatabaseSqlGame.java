@@ -144,8 +144,10 @@ public class DatabaseSqlGame implements GameDAO {
             }
             else{
                 statement = "SELECT BlackUserName FROM gameTable WHERE GameID=?";
+
             }
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
+                ps.setInt(1,gameID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()&&playerColor.equals("WHITE")){
                         return rs.getString("WhiteUserName");

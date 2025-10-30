@@ -58,6 +58,7 @@ public class DatabaseSqlAuth implements AuthDAO {
             ps = conn.prepareStatement("INSERT INTO auth (AuthToken, Username) VALUES (?, ?)");
             ps.setString(1,authData.authToken());
             ps.setString(2,authData.username());
+            ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -84,29 +85,30 @@ public class DatabaseSqlAuth implements AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-        var statement = "DELETE FROM pet WHERE AuthToken=?";
+        var statement = "DELETE FROM auth WHERE AuthToken=?";
         try (var conn = DatabaseManager.getConnection();
              var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1,authToken);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException("failed to delete using AuthToken", ex);
         }
     }
 
-
-    private void getAuthExecuteUpdate(String statement, Object... params) throws ResponseException, SQLException {
-        try (var conn = DriverManager.getConnection("jdbc:mysql://localhost:3306", "root", "monkeypie")) {
-            conn.setCatalog("pet_store");
-            try (var preparedStatement = conn.prepareStatement("SELECT id, name, type from pet")) {
-                try (var rs = preparedStatement.executeQuery()) {
-                    while (rs.next()) {
-                        var id = rs.getInt("id");
-                        var name = rs.getString("name");
-                        var type = rs.getString("type");
-                        System.out.printf("id: %d, name: %s, type: %s%n", id, name, type);
-                    }
-                }
-            }
-        }
-    }
+//
+//    private void getAuthExecuteUpdate(String statement, Object... params) throws ResponseException, SQLException {
+//        try (var conn = DriverManager.getConnection("jdbc:mysql://localhost:3306", "root", "monkeypie")) {
+//            conn.setCatalog("pet_store");
+//            try (var preparedStatement = conn.prepareStatement("SELECT id, name, type from auth")) {
+//                try (var rs = preparedStatement.executeQuery()) {
+//                    while (rs.next()) {
+//                        var id = rs.getInt("id");
+//                        var name = rs.getString("name");
+//                        var type = rs.getString("type");
+//                        System.out.printf("id: %d, name: %s, type: %s%n", id, name, type);
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

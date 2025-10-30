@@ -37,6 +37,7 @@ public class Service {
             String authToken = generateRandomString();
             AuthData authdata = new AuthData(authToken,regReq.username());
             authDAO.createAuth(authdata);
+//            AuthData auth = authDAO.getAuth(authdata.authToken());
             userDAO.createUser(new UserData(regReq.username(),regReq.password(),regReq.email()));
             RegisterResult regRes = new RegisterResult(regReq.username(), authToken);
             return regRes;

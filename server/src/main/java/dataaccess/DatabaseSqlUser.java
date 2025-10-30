@@ -30,7 +30,7 @@ public class DatabaseSqlUser implements UserDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  user (
+            CREATE TABLE IF NOT EXISTS  userTable (
               `Username` varchar(256) NOT NULL,
               `Password` varchar(256) NOT NULL,
               `Email` varchar(256),
@@ -40,19 +40,19 @@ public class DatabaseSqlUser implements UserDAO {
     };
 
     public void clear() throws DataAccessException{
-        var statement = "TRUNCATE user";
+        var statement = "TRUNCATE userTable";
         try (var conn = DatabaseManager.getConnection();
              var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to clear User", ex);
+            throw new DataAccessException("failed to clear userTable", ex);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void createUser(UserData userData) throws DataAccessException {
-        var statement = "INSERT INTO user (Username, Password, Email) VALUES (?, ?, ?)";
+        var statement = "INSERT INTO userTable (Username, Password, Email) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setString(1,userData.username());
@@ -68,7 +68,7 @@ public class DatabaseSqlUser implements UserDAO {
 
     public UserData getUser(String username) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement("SELECT Username, Password, Email FROM user WHERE Username=?")) {
+            try (PreparedStatement ps = connection.prepareStatement("SELECT Username, Password, Email FROM userTable WHERE Username=?")) {
                 ps.setString(1,username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()){

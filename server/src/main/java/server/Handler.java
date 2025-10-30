@@ -33,7 +33,7 @@ public class Handler {
                 RegisterRequest regReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         RegisterResult registerResult = service.register(regReq);
             ctx.status(200);
-            ctx.result("{}");
+//            ctx.result("{}");
             ctx.json(new Gson().toJson(registerResult));
         //below sets the json, which is the response to the request of the server
         }

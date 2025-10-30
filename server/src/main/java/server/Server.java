@@ -18,7 +18,17 @@ public class Server {
         }
     }
 
-    GameDAO memoryGame = new MemoryGame();
+    GameDAO memoryGame;
+    {
+        try {
+            memoryGame = new DatabaseSqlGame();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     AuthDAO memoryAuth;
     {
         try {

@@ -14,13 +14,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 public class DatabaseSqlGame implements GameDAO {
 
     public DatabaseSqlGame() throws ResponseException, DataAccessException {
         configureDatabase();
     }
-
     private void configureDatabase() throws ResponseException, DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -30,9 +30,21 @@ public class DatabaseSqlGame implements GameDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException("failed to configure database");
+            throw new ResponseException("Error with configuring the database");
         }
     }
+//    private void configureDatabase() throws ResponseException, DataAccessException {
+//        DatabaseManager.createDatabase();
+//        try (Connection conn = DatabaseManager.getConnection()) {
+//            for (String statement : createStatements) {
+//                try (var preparedStatement = conn.prepareStatement(statement)) {
+//                    preparedStatement.executeUpdate();
+//                }
+//            }
+//        } catch (SQLException ex) {
+//            throw new ResponseException("failed to configure database");
+//        }
+//    }
 
     private final String[] createStatements = {
             """
@@ -40,22 +52,38 @@ public class DatabaseSqlGame implements GameDAO {
               `GameID` int NOT NULL AUTO_INCREMENT,
               `WhiteUserName` varchar(256) NOT NULL,
               `BlackUserName` varchar(256) NOT NULL,
-              `GameName` varchar(256) NOT NULL
-              `Game` String,
+              `GameName` varchar(256) NOT NULL,
+              `Game` TEXT,
               PRIMARY KEY (`GameID`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            ) 
             """
             //gson serializes it into a string and json serializes it back into a chess game
     };
 
     public void clear() throws DataAccessException {
-
+        var statement = "TRUNCATE game";
+        try (var conn = DatabaseManager.getConnection();
+             var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to clear Game", ex);
+        }
     }
-
+    private int generateRandomNumber(){
+        Random random = new Random();
+        return random.nextInt(1,1000000);
+    }
     public int createGame(String gameName) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()){
             try(var ps = conn.prepareStatement("INSERT INTO game (GameID, WhiteUsername, BlackUsername, GameName, Game) VALUES(?, ?, ?, ?, ?)")){
+                int gameID = generateRandomNumber();
+                ps.setInt(1,gameID);
+                ps.setString(2, null);
+                ps.setString(3,null);
+                ps.setString(4,gameName);
+                ps.setString(5,null);
                 ps.executeUpdate();
+                return gameID;
             } catch (SQLException e) {
                 throw new DataAccessException("Create Game Failed");
             }
@@ -63,13 +91,12 @@ public class DatabaseSqlGame implements GameDAO {
             throw new RuntimeException(e);
         }
         //how to return that int
-        return 0;
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM game WHERE GameID=?")) {
-                //capitalize
+                ps.setInt(1,gameID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()){
                         return new GameData(rs.getInt("GameID"), rs.getString("WhiteUsername"), rs.getString("BlackUsername"), rs.getString("GameName"), new Gson().fromJson(rs.getString("Game"), ChessGame.class));
@@ -111,11 +138,20 @@ public class DatabaseSqlGame implements GameDAO {
 
     public String getUsername(String playerColor, int gameID) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement("SELECT Username, Password, Email FROM user WHERE Username=?")) {
-                //capitalize
+            String statement;
+            if(playerColor.equals("WHITE")){
+                statement = "SELECT WhiteUserName FROM game WHERE GameID=?";
+            }
+            else{
+                statement = "SELECT BlackUserName FROM game WHERE GameID=?";
+            }
+            try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 try (ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()){
-                        return rs.getString("Username");
+                    if(rs.next()&&playerColor.equals("WHITE")){
+                        return rs.getString("WhiteUserName");
+                    }
+                    else if(rs.next()&&playerColor.equals("BLACK")){
+                        return rs.getString("BlackUserName");
                     }
                     else{
                         return null;

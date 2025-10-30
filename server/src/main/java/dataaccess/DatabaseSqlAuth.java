@@ -57,7 +57,7 @@ public class DatabaseSqlAuth implements AuthDAO {
         try {
             ps = conn.prepareStatement("INSERT INTO auth (AuthToken, Username) VALUES (?, ?)");
             ps.setString(1,authData.authToken());
-            ps.setString(1,authData.username());
+            ps.setString(2,authData.username());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

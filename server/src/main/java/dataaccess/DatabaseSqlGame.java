@@ -78,10 +78,10 @@ public class DatabaseSqlGame implements GameDAO {
             try(var ps = conn.prepareStatement("INSERT INTO gameTable (GameID, WhiteUsername, BlackUsername, GameName, Game) VALUES(?, ?, ?, ?, ?)")){
                 int gameID = generateRandomNumber();
                 ps.setInt(1,gameID);
-                ps.setString(2, "null");
-                ps.setString(3,"null");
+                ps.setString(2, null);
+                ps.setString(3,null);
                 ps.setString(4,gameName);
-                ps.setString(5,"null");
+                ps.setString(5,null);
                 ps.executeUpdate();
                 return gameID;
             } catch (SQLException e) {
@@ -175,7 +175,7 @@ public class DatabaseSqlGame implements GameDAO {
                 String gameVars = new Gson().toJson(game.game());
                 ps.setString(4,gameVars);
                 ps.setInt(5,game.gameID());
-                ps.executeQuery();
+                ps.executeUpdate();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

@@ -21,7 +21,7 @@ public class ServiceTest {
     MemoryUser userMemory = new MemoryUser();
     MemoryGame gameMemory = new MemoryGame();
     MemoryAuth authMemory = new MemoryAuth();
-    Service userService = new Service(userMemory, gameMemory, authMemory);
+    OldService userService = new OldService(userMemory, gameMemory, authMemory);
 
     @Test
     @DisplayName("registering a user and it returns a register result to handler")
@@ -96,9 +96,12 @@ public class ServiceTest {
         hashMap.put(gameIDTwo, new GameData(gameIDTwo, null, null, "b", new ChessGame()));
         hashMap.put(gameIDThree, new GameData(gameIDThree, null, null, "c", new ChessGame()));
         GameData gameDatas = hashMap.get(gameIDOne);
-        GameData gameData = userService.listGames(authToken).get(0);
-        assertEquals(gameDatas, gameData);
-
+        GameData gameDatasTwo = hashMap.get(gameIDTwo);
+        GameData gameDatasThree = hashMap.get(gameIDThree);
+        GameData gameData = userService.listGames(authToken).getFirst();
+        assertEquals(gameDatas.gameID(), gameIDOne);
+        assertEquals(gameDatasTwo.gameID(), gameIDTwo);
+        assertEquals(gameDatasThree.gameID(), gameIDThree);
     }
 
     @Test

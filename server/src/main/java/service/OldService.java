@@ -7,7 +7,6 @@ import dataaccess.exceptions.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 
@@ -16,11 +15,11 @@ import java.util.List;
 import java.util.UUID;
 
 
-public class Service {
+public class OldService {
     UserDAO userDAO;
     AuthDAO authDAO;
     GameDAO gameDAO;
-    public Service(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
+    public OldService(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
         this.userDAO=userDAO;
         this.gameDAO=gameDAO;
         this.authDAO = authDAO;
@@ -38,7 +37,6 @@ public class Service {
             String authToken = generateRandomString();
             AuthData authdata = new AuthData(authToken,regReq.username());
             authDAO.createAuth(authdata);
-//            AuthData auth = authDAO.getAuth(authdata.authToken());
             userDAO.createUser(new UserData(regReq.username(),regReq.password(),regReq.email()));
             RegisterResult regRes = new RegisterResult(regReq.username(), authToken);
             return regRes;
@@ -46,17 +44,6 @@ public class Service {
         else{
             throw new AlreadyTakenException("this username already exists");
         }
-//      c
-//
-//
-
-        //server communicaticesto json
-        //service has logic and  takes that and puts it into database. This is where the game of chess happens
-        // dataaccess is where the data is stored
-        //encription is in service since server is just serialization
-
-        //theres a password example up in the phase 4 instrcutction
-
     }
 
     public AuthData loginUser(UserData userData) throws DataAccessException, UnauthorizedException, BadRequest, InvalidID {
@@ -64,21 +51,23 @@ public class Service {
             throw new BadRequest("error: one of your information spots are blank");
         }
         else if (userDAO.getUser(userData.username())==null){
-            throw new UnauthorizedException("error: this username doesnt work");
+            throw new DataAccessException("error: this username doesnt work");
         }
-        else if (!checkPass(userDAO.getUser(userData.username()).password(), (userData.password()))){//checspass
+        else if (!userDAO.getUser(userData.username()).password().equals(userData.password())){
             throw new UnauthorizedException("error: username and password are incorrect");
         }
+//        else if (userDAO.getUser(userData.username())!=null){
+//
+//        }
         else{
             String authToken = generateRandomString();
             var authData = new AuthData(authToken, userData.username());
+            //this might create a second authdata if its already registered aaaaaaaa
             authDAO.createAuth(authData);
             return authData;
         }
     }
-    public boolean checkPass(String encrypted, String clearString){
-        return BCrypt.checkpw(clearString, encrypted);
-    }
+
     public void logoutUser(String authToken) throws DataAccessException, UnauthorizedException{
         if(authDAO.getAuth(authToken)==null||authToken.isBlank()){
             throw new UnauthorizedException("Error:unable to log out due to invalid authtoken");
@@ -128,8 +117,7 @@ public class Service {
         else if (authToken == null || authDAO.getAuth(authToken) == null ){
             throw new UnauthorizedException("Error: null authToken");
         }
-        boolean isNotTaken = gameDAO.getUsername(playerColor,gameID)==null;
-        if(!isNotTaken){
+        else if(gameDAO.getUsername(playerColor,gameID)!=null){
             throw new InvalidID("someone already claimed this color");
         }
         else if(!playerColor.equals("WHITE") && !playerColor.equals("BLACK")){

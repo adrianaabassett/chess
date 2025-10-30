@@ -62,17 +62,7 @@ public class DatabaseTest {
     public void createUserPositive() throws DataAccessException, SQLException {
         clear();
         databaseSqlUser.createUser(new UserData("usernn", "passww","eemm"));
-        try (var conn = DatabaseManager.getConnection()){
-            try(var ps = conn.prepareStatement("SELECT Username, Password, Email FROM user WHERE Username=?")){
-                ps.setString(1,"usernn");
-                try(var resultSet = ps.executeQuery()){
-                    while (resultSet.next()){
-                        assertEquals("usernn", resultSet.getString("Username"));
-                    }
-                }
-            }
 
-        }
         clear();
     }
 

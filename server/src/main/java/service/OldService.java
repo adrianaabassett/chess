@@ -29,16 +29,16 @@ public class OldService {
         return UUID.randomUUID().toString();
     }
 
-    public RegisterResult register(RegisterRequest regReq) throws DataAccessException, BadRequest, AlreadyTakenException {
-        if(regReq.username() == null||regReq.password()==null||regReq.email()==null||regReq.password().isEmpty()){
+    public RegisterResult register(RegisterRequest oldRegReq) throws DataAccessException, BadRequest, AlreadyTakenException {
+        if(oldRegReq.username() == null||oldRegReq.password()==null||oldRegReq.email()==null||oldRegReq.password().isEmpty()){
             throw new BadRequest("no username,password, or email");
         }
-        else if(userDAO.getUser(regReq.username())==null){
-            String authToken = generateRandomString();
-            AuthData authdata = new AuthData(authToken,regReq.username());
+        else if(userDAO.getUser(oldRegReq.username())==null){
+            String oldAuthToken = generateRandomString();
+            AuthData authdata = new AuthData(oldAuthToken,oldRegReq.username());
             authDAO.createAuth(authdata);
-            userDAO.createUser(new UserData(regReq.username(),regReq.password(),regReq.email()));
-            RegisterResult regRes = new RegisterResult(regReq.username(), authToken);
+            userDAO.createUser(new UserData(oldRegReq.username(),oldRegReq.password(),oldRegReq.email()));
+            RegisterResult regRes = new RegisterResult(oldRegReq.username(), oldAuthToken);
             return regRes;
         }
         else{
@@ -48,60 +48,60 @@ public class OldService {
 
     public AuthData loginUser(UserData userData) throws DataAccessException, UnauthorizedException, BadRequest, InvalidID {
         if(userData.username() == null|| userData.password()==null){
-            throw new BadRequest("error: one of your information spots are blank");
+            throw new BadRequest("error: old  one of your information spots are blank");
         }
         else if (userDAO.getUser(userData.username())==null){
-            throw new DataAccessException("error: this username doesnt work");
+            throw new DataAccessException("error: old  this username doesnt work");
         }
         else if (!userDAO.getUser(userData.username()).password().equals(userData.password())){
-            throw new UnauthorizedException("error: username and password are incorrect");
+            throw new UnauthorizedException("error: old  username and password are incorrect");
         }
 //        else if (userDAO.getUser(userData.username())!=null){
 //
 //        }
         else{
-            String authToken = generateRandomString();
-            var authData = new AuthData(authToken, userData.username());
+            String oldAuthToken = generateRandomString();
+            var authData = new AuthData(oldAuthToken, userData.username());
             //this might create a second authdata if its already registered aaaaaaaa
             authDAO.createAuth(authData);
             return authData;
         }
     }
 
-    public void logoutUser(String authToken) throws DataAccessException, UnauthorizedException{
-        if(authDAO.getAuth(authToken)==null||authToken.isBlank()){
-            throw new UnauthorizedException("Error:unable to log out due to invalid authtoken");
+    public void logoutUser(String oldAuthToken) throws DataAccessException, UnauthorizedException{
+        if(authDAO.getAuth(oldAuthToken)==null||oldAuthToken.isBlank()){
+            throw new UnauthorizedException("error: old unable to log out due to invalid oldAuthToken");
         }
-        else if(authDAO.getAuth(authToken)==null){
-            throw new DataAccessException("Error:there is no user to log out");
+        else if(authDAO.getAuth(oldAuthToken)==null){
+            throw new DataAccessException("error: old there is no user to log out");
         }
         else{
-            authDAO.deleteAuth(authToken);
+            authDAO.deleteAuth(oldAuthToken);
         }
     }
 
     public void clear() throws DataAccessException {
-        userDAO.clear();
         gameDAO.clear();
+        userDAO.clear();
         authDAO.clear();
     }
 
-    public GameData  createGame(String gameName, String authToken) throws DataAccessException, UnauthorizedException, BadRequest {
-        if(gameName == null || authToken ==null || gameName.isBlank() || authToken.isBlank()){
+    public GameData  createGame(String gameName, String oldAuthToken) throws DataAccessException, UnauthorizedException, BadRequest {
+        if(gameName == null || oldAuthToken ==null || gameName.isBlank() || oldAuthToken.isBlank()){
             throw new BadRequest("no game name or auth token");
         }
-        else if (authDAO.getAuth(authToken)==null){
+        else if (authDAO.getAuth(oldAuthToken)==null){
             throw new UnauthorizedException("you cannot create a game if you are not logged in");
         }
         else{
             int gameID = gameDAO.createGame(gameName);
-            GameData newGame = new GameData(gameID, null, null,gameName,new ChessGame());
-            return newGame;
+            GameData oldNewishGame = new GameData(gameID, null, null,gameName,new ChessGame());
+            return oldNewishGame;
         }
     }
 
-    public List<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedException{
-        if(authDAO.getAuth(authToken)==null){
+    public List<GameData> listGames(String oldAuthToken) throws DataAccessException, UnauthorizedException{
+        if(authDAO.getAuth(oldAuthToken)==null){
             throw new UnauthorizedException("this user is not logged in");
         }
         else{
@@ -109,36 +109,36 @@ public class OldService {
         }
     }
 
-    public void joinGame(String authToken, String playerColor, Integer gameID)
+    public void joinGame(String oldAuthToken, String oldPlayerColor, Integer oldGameID)
             throws DataAccessException, InvalidID, BadRequest, UnauthorizedException {
-        if(playerColor == null|| gameID==null|| gameDAO.getGame(gameID)==null ){
-            throw new BadRequest("bad game idt");
+        if(oldPlayerColor == null|| oldGameID==null|| gameDAO.getGame(oldGameID)==null ){
+            throw new BadRequest("old bad game idt");
         }
-        else if (authToken == null || authDAO.getAuth(authToken) == null ){
-            throw new UnauthorizedException("Error: null authToken");
+        else if (oldAuthToken == null || authDAO.getAuth(oldAuthToken) == null ){
+            throw new UnauthorizedException("error: old  null oldAuthToken");
         }
-        else if(gameDAO.getUsername(playerColor,gameID)!=null){
-            throw new InvalidID("someone already claimed this color");
+        else if(gameDAO.getUsername(oldPlayerColor,oldGameID)!=null){
+            throw new InvalidID("old someone already claimed this color");
         }
-        else if(!playerColor.equals("WHITE") && !playerColor.equals("BLACK")){
-            throw new BadRequest("please only play as black or white");
+        else if(!oldPlayerColor.equals("WHITE") && !oldPlayerColor.equals("BLACK")){
+            throw new BadRequest("old please only play as black or white");
         }
         else{
-            GameData gameData = gameDAO.getGame(gameID);
+            GameData gameData = gameDAO.getGame(oldGameID);
             String whiteUsername;
             String blackUsername;
-            if(playerColor.equals("WHITE")) {
-                whiteUsername = authDAO.getAuth(authToken).getUsername();
+            if(oldPlayerColor.equals("WHITE")) {
+                whiteUsername = authDAO.getAuth(oldAuthToken).getUsername();
                 blackUsername = gameData.blackUsername();
             }
-            else if(playerColor.equals("BLACK")) {
+            else if(oldPlayerColor.equals("BLACK")) {
                 whiteUsername = gameData.whiteUsername();
-                blackUsername = authDAO.getAuth(authToken).getUsername();
+                blackUsername = authDAO.getAuth(oldAuthToken).getUsername();
             }
             else{
                 throw new DataAccessException("wrong color");
             }
-            gameDAO.updateGame(new GameData(gameID, whiteUsername,blackUsername,gameData.gameName(),gameData.game()));
+            gameDAO.updateGame(new GameData(oldGameID, whiteUsername,blackUsername,gameData.gameName(),gameData.game()));
 
 
         }

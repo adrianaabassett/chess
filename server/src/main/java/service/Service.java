@@ -10,10 +10,10 @@ import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
 
 
 public class Service {

@@ -19,9 +19,9 @@ import java.util.Random;
 public class DatabaseSqlGame implements GameDAO {
 
     public DatabaseSqlGame() throws ResponseException, DataAccessException {
-        configureDatabase();
+        configureDatabaseGame();
     }
-    private void configureDatabase() throws ResponseException, DataAccessException {
+    private void configureDatabaseGame() throws ResponseException, DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
             for (String statement : createStatements) {
@@ -33,18 +33,6 @@ public class DatabaseSqlGame implements GameDAO {
             throw new ResponseException("Error with configuring the database");
         }
     }
-//    private void configureDatabase() throws ResponseException, DataAccessException {
-//        DatabaseManager.createDatabase();
-//        try (Connection conn = DatabaseManager.getConnection()) {
-//            for (String statement : createStatements) {
-//                try (var preparedStatement = conn.prepareStatement(statement)) {
-//                    preparedStatement.executeUpdate();
-//                }
-//            }
-//        } catch (SQLException ex) {
-//            throw new ResponseException("failed to configure database");
-//        }
-//    }
 
     private final String[] createStatements = {
             """
@@ -95,11 +83,16 @@ public class DatabaseSqlGame implements GameDAO {
 
     public GameData getGame(int gameID) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameID=?")) {
+            String statement = "SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameID=?";
+            try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setInt(1,gameID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()){
-                        return new GameData(rs.getInt("GameID"), rs.getString("WhiteUsername"), rs.getString("BlackUsername"), rs.getString("GameName"), new Gson().fromJson(rs.getString("Game"), ChessGame.class));
+                        int gameIDFromData=rs.getInt("GameID");
+                        String wUser = rs.getString("WhiteUsername");
+                        String bUser = rs.getString("BlackUsername");
+                        String gN = rs.getString("GameName");
+                        return new GameData(gameIDFromData, wUser, bUser, gN, new Gson().fromJson(rs.getString("Game"), ChessGame.class));
                     }
                     else{
                         return null;
@@ -149,17 +142,20 @@ public class DatabaseSqlGame implements GameDAO {
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setInt(1,gameID);
                 try (ResultSet rs = ps.executeQuery()) {
+                    boolean nextIs= false;
                     if(rs.next()){
-                        if(playerColor.equals("WHITE")){
-                            return rs.getString("WhiteUserName");
+                        nextIs = true;}
+                    if(nextIs && playerColor.equals("WHITE")){
+                        return rs.getString("WhiteUserName");
+                    }
+                    else if(nextIs && playerColor.equals("BLACK")){
+                        return rs.getString("BlackUserName");
+                    }
+                    else if(nextIs){
+                        throw new DataAccessException("not a real color");
+
                         }
-                        else if(playerColor.equals("BLACK")){
-                            return rs.getString("BlackUserName");
-                        }
-                        else{
-                            return null;
-                        }
-                    }}
+                    }
             }
         } catch (Exception e) {
             throw new DataAccessException("error getting Username from gameTable database");
@@ -187,11 +183,15 @@ public class DatabaseSqlGame implements GameDAO {
     }
     public GameData getGameFromGameName(String gameName) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = connection.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameName=?")) {
-                ps.setString(1,gameName);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()){
-                        return new GameData(rs.getInt("GameID"), rs.getString("WhiteUsername"), rs.getString("BlackUsername"), rs.getString("GameName"), new Gson().fromJson(rs.getString("Game"), ChessGame.class));
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameName=?")) {
+                preparedStatement.setString(1,gameName);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if(resultSet.next()){
+                        int gameInt = resultSet.getInt("GameID");
+                        String whiteVal = resultSet.getString("WhiteUsername");
+                        String blackVal = resultSet.getString("BlackUsername");
+                        String gameVal =  resultSet.getString("GameName");
+                        return new GameData(gameInt, whiteVal, blackVal,gameVal, new Gson().fromJson(resultSet.getString("Game"), ChessGame.class));
                     }
                     else{
                         return null;

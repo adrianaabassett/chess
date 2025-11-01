@@ -15,14 +15,14 @@ import static java.sql.Types.NULL;
 public class DatabaseSqlAuth implements AuthDAO {
 
     public DatabaseSqlAuth() throws ResponseException, DataAccessException {
-        configureDatabase();
+        configureDatabaseAuth();
     }
 
-    private void configureDatabase() throws ResponseException, DataAccessException {
+    private void configureDatabaseAuth() throws ResponseException, DataAccessException {
         DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
+        try (Connection connection = DatabaseManager.getConnection()) {
+            for (String statementCreated : createStatements) {
+                try (var preparedStatement = connection.prepareStatement(statementCreated)) {
                     preparedStatement.executeUpdate();
                 }
             }

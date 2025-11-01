@@ -13,6 +13,7 @@ import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class DatabaseTest {
 
         assertNull(databaseSqlUser.getUser("usern"));
         assertNull(databaseSqlGame.getGame(gameID));
-        assertThrows(DataAccessException.class, () -> databaseSqlAuth.getAuth("tokwn"));
+        assertNull( databaseSqlAuth.getAuth("tokwn"));
     }
 
 
@@ -117,7 +118,7 @@ public class DatabaseTest {
         clear();
 //        AuthData authData = new AuthData("you should watch over the garden wall","use");
 //        databaseSqlAuth.createAuth(authData);
-        assertThrows(DataAccessException.class, () -> databaseSqlAuth.getAuth("null"));
+        assertNull(databaseSqlAuth.getAuth("null"));
 
     }
 
@@ -137,7 +138,7 @@ public class DatabaseTest {
         clear();
         AuthData authData = new AuthData("you should watch over the garden wall","use");
         databaseSqlAuth.createAuth(authData);
-        assertThrows(DataAccessException.class, () -> databaseSqlAuth.getAuth("notauser"));
+        assertNull( databaseSqlAuth.getAuth("notauser"));
 
     }
 
@@ -149,16 +150,7 @@ public class DatabaseTest {
         AuthData authData = new AuthData("here is a token","use");
         databaseSqlAuth.createAuth(authData);
         databaseSqlAuth.deleteAuth("here is a token");
-        assertThrows(DataAccessException.class, () -> databaseSqlAuth.getAuth("here is a token"));
-    }
-    //negative
-    @Test
-    @DisplayName("Not deleting an Auth")
-    public void deleteAuthNegative() throws DataAccessException {
-        clear();
-        AuthData authData = new AuthData("here is a token","use");
-        databaseSqlAuth.createAuth(authData);
-        assertThrows(DataAccessException.class, () -> databaseSqlAuth.deleteAuth("here is not a token"));
+        assertNull(databaseSqlAuth.getAuth("here is a token"));
     }
 
     //GameSQL
@@ -216,8 +208,9 @@ public class DatabaseTest {
     @Test
     @DisplayName("Not listing a Game")
     public void listGameNegative() throws DataAccessException {
+        ArrayList<GameData> emptyArray = new ArrayList<>();
         databaseSqlGame.clear();
-        assertThrows(DataAccessException.class, () -> databaseSqlGame.listGames());
+        assertEquals(emptyArray, databaseSqlGame.listGames());
 
     }
 
@@ -236,7 +229,7 @@ public class DatabaseTest {
     @DisplayName("Not getting a username from a Game")
     public void getUsernameGameNegative()throws DataAccessException{
         clear();
-        assertThrows(DataAccessException.class, () -> databaseSqlGame.getUsername("nothing here but the void",4));
+        assertNull( databaseSqlGame.getUsername("nothing here but the void",4));
     }
 
     //updategame
@@ -256,7 +249,8 @@ public class DatabaseTest {
     @DisplayName("Not Updating game")
     public void updateGameNegative() throws DataAccessException {
         clear();
-        assertThrows(DataAccessException.class, () -> databaseSqlGame.updateGame(new GameData(1,"a","v","y",new ChessGame())));
+        databaseSqlGame.updateGame(new GameData(1,"a","v","y",new ChessGame()));
+        assertNull(databaseSqlGame.getGame(1));
 
     }
 

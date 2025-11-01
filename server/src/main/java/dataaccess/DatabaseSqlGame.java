@@ -111,6 +111,80 @@ public class DatabaseSqlGame implements GameDAO {
         }
 
     }
+
+    public List<GameData> listGames() throws DataAccessException {
+        ArrayList<GameData> newGames = new ArrayList<>();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName,Game from gameTable")){
+                try (var rs = statement.executeQuery()){
+                    while(rs.next()){
+                        var gameID = rs.getInt("GameID");
+                        var whiteUsername = rs.getString("WhiteUsername");
+                        var blackUsername = rs.getString("BlackUsername");
+                        var gameName = rs.getString("GameName");
+                        var chessGame = new Gson().fromJson(rs.getString("Game"), ChessGame.class);
+                        newGames.add(new GameData(gameID, whiteUsername,blackUsername,gameName,chessGame));
+                    }
+                }
+            }catch(SQLException e){
+                return null;
+            }
+            return newGames;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public String getUsername(String playerColor, int gameID) throws DataAccessException {
+        try (Connection connection = DatabaseManager.getConnection()) {
+            String statement;
+            if(playerColor.equals("WHITE")){
+                statement = "SELECT WhiteUserName FROM gameTable WHERE GameID=?";
+            }
+            else{
+                statement = "SELECT BlackUserName FROM gameTable WHERE GameID=?";
+
+            }
+            try (PreparedStatement ps = connection.prepareStatement(statement)) {
+                ps.setInt(1,gameID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if(rs.next()){
+                        if(playerColor.equals("WHITE")){
+                            return rs.getString("WhiteUserName");
+                        }
+                        else if(playerColor.equals("BLACK")){
+                            return rs.getString("BlackUserName");
+                        }
+                        else{
+                            return null;
+                        }
+                    }}
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("error getting Username from gameTable database");
+        }
+        return null;
+    }
+
+    public void updateGame(GameData game) throws DataAccessException {
+        try(var conn = DatabaseManager.getConnection()){
+            var statement = "UPDATE gameTable SET WhiteUsername=?, BlackUsername=?, GameName=?, Game=? WHERE gameID=?";
+            try(var ps = conn.prepareStatement(statement)){
+                ps.setString(1,game.whiteUsername());
+                ps.setString(2,game.blackUsername());
+                ps.setString(3, game.gameName());
+                String gameVars = new Gson().toJson(game.game());
+                ps.setString(4,gameVars);
+                ps.setInt(5,game.gameID());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public GameData getGameFromGameName(String gameName) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = connection.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameName=?")) {
@@ -127,97 +201,5 @@ public class DatabaseSqlGame implements GameDAO {
         } catch (Exception e) {
             throw new DataAccessException("error getting GameTable from database");
         }
-
-    }
-
-    public List<GameData> listGames() throws DataAccessException {
-        ArrayList<GameData> newGames = new ArrayList<>();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName,Game from gameTable")){
-                try (var rs = statement.executeQuery()){
-                    if(rs.next()){
-                        var gameID = rs.getInt("GameID");
-                        var whiteUsername = rs.getString("WhiteUsername");
-                        var blackUsername = rs.getString("BlackUsername");
-                        var gameName = rs.getString("GameName");
-                        var chessGame = new Gson().fromJson(rs.getString("Game"), ChessGame.class);
-                        newGames.add(new GameData(gameID, whiteUsername,blackUsername,gameName,chessGame));
-                    }
-                    else{
-                        throw new DataAccessException("no games available");
-                    }
-                    while(rs.next()){
-                        var gameID = rs.getInt("GameID");
-                        var whiteUsername = rs.getString("WhiteUsername");
-                        var blackUsername = rs.getString("BlackUsername");
-                        var gameName = rs.getString("GameName");
-                        var chessGame = new Gson().fromJson(rs.getString("Game"), ChessGame.class);
-                        newGames.add(new GameData(gameID, whiteUsername,blackUsername,gameName,chessGame));
-                    }
-                }
-        }catch(SQLException e){
-            return null;
-    }
-        return newGames;
-    } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    public String getUsername(String playerColor, int gameID) throws DataAccessException {
-        try (Connection connection = DatabaseManager.getConnection()) {
-            String statement;
-            if(playerColor.equals("WHITE")){
-                statement = "SELECT WhiteUserName FROM gameTable WHERE GameID=?";
-            }
-            else{
-                statement = "SELECT BlackUserName FROM gameTable WHERE GameID=?";
-            }
-            try (PreparedStatement ps = connection.prepareStatement(statement)) {
-                ps.setInt(1,gameID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()){
-                    if(playerColor.equals("WHITE")){
-                        return rs.getString("WhiteUserName");
-                    }
-                    else if(playerColor.equals("BLACK")){
-                        return rs.getString("BlackUserName");
-                    }
-                    else{
-                        return null;
-                    }
-                }
-                else{
-                        throw new DataAccessException("error getting Username from gameTable database");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new DataAccessException("error getting Username from gameTable database");
-        }
-    }
-
-    public void updateGame(GameData game) throws DataAccessException {
-        try(var conn = DatabaseManager.getConnection()){
-            if(getGame(game.gameID())==null){
-                            throw new DataAccessException("cannot update game");
-            }
-            var statement = "UPDATE gameTable SET WhiteUsername=?, BlackUsername=?, GameName=?, Game=? WHERE gameID=?";
-            try(var ps = conn.prepareStatement(statement)){
-                ps.setString(1,game.whiteUsername());
-                ps.setString(2,game.blackUsername());
-                ps.setString(3, game.gameName());
-                String gameVars = new Gson().toJson(game.game());
-                ps.setString(4,gameVars);
-                ps.setInt(5,game.gameID());
-                ps.executeUpdate();
-            } catch (SQLException e) {
-                throw new DataAccessException("error updating game");
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("cannot update game");
-        }
     }
 }
-

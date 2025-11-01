@@ -63,7 +63,6 @@ public class Handler {
                 ctx.status(500);
                 ctx.result("{\"message\":\"Error:"+e.getMessage()+"\"}");
             }
-
     }
 
     public void loginUser(Context ctx) throws DataAccessException, UnauthorizedException, BadRequest, InvalidID {

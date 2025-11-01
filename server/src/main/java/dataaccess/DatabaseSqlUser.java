@@ -76,7 +76,7 @@ public class DatabaseSqlUser implements UserDAO {
                 ps.setString(1,username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if(rs.next()){
-                        String decryptedPass = rs.getString("Password");
+                        String decryptedPass =  rs.getString("Password");
                         return new UserData(rs.getString("Username"),decryptedPass, rs.getString("Email"));
                     }
                     else{

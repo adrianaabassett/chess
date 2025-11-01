@@ -152,7 +152,7 @@ public class DatabaseSqlGame implements GameDAO {
                         return rs.getString("BlackUserName");
                     }
                     else if(nextIs){
-                        throw new DataAccessException("not a real color");
+                        return null;
 
                         }
                     }

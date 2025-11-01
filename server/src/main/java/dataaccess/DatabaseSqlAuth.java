@@ -30,7 +30,6 @@ public class DatabaseSqlAuth implements AuthDAO {
             throw new ResponseException("Error with configuring the database");
         }
     }
-
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auth (

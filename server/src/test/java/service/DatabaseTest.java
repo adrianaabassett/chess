@@ -1,5 +1,4 @@
 package service;
-
 import chess.ChessGame;
 import dataaccess.*;
 import dataaccess.exceptions.*;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;

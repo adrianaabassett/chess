@@ -5,26 +5,24 @@ import dataaccess.exceptions.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import recordrequests.RegisterRequest;
-import recordrequests.RegisterResult;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 // for simplicity's sake, I'm putting all of my testis in this file
-public class DatabaseTest {
+public class UnitTests {
     DatabaseSqlAuth authDatabase = new DatabaseSqlAuth();
     DatabaseSqlGame gameDatabase = new DatabaseSqlGame();
     DatabaseSqlUser userDatabase = new DatabaseSqlUser();
     Service userService = new Service(userDatabase, gameDatabase, authDatabase);
 
-    public DatabaseTest() throws ResponseException, DataAccessException {
+    public UnitTests() throws ResponseException, DataAccessException {
     }
 
 
@@ -150,6 +148,16 @@ public class DatabaseTest {
         databaseSqlAuth.deleteAuth("here is a token");
         assertNull(databaseSqlAuth.getAuth("here is a token"));
     }
+    @Test
+    @DisplayName("Not Deleting an Auth")
+    public void deleteAuthNegative() throws DataAccessException {
+        clear();
+        AuthData authData = new AuthData("here is a token","use");
+        databaseSqlAuth.deleteAuth("here is a token");
+        assertNull(databaseSqlAuth.getAuth("here is a token"));
+        assertNull(databaseSqlAuth.getAuth("here is not a token"));
+        assertNull(databaseSqlAuth.getAuth("here is a token sike no its not "));
+    }
 
     //GameSQL
 
@@ -249,7 +257,18 @@ public class DatabaseTest {
         clear();
         databaseSqlGame.updateGame(new GameData(1,"a","v","y",new ChessGame()));
         assertNull(databaseSqlGame.getGame(1));
+    }
+    @Test
+    @DisplayName("clear all databases shortened")
+    public void clearAll() throws DataAccessException{
+        clear();
+        databaseSqlUser.createUser(new UserData("usern","passw","eem"));
+        int gameID = databaseSqlGame.createGame("gamen");
+        databaseSqlAuth.createAuth(new AuthData("tokwn","usern"));
 
+        assertNull(databaseSqlUser.getUser("usern"));
+        assertNull(databaseSqlGame.getGame(gameID));
+        assertNull( databaseSqlAuth.getAuth("tokwn"));
     }
 
 }

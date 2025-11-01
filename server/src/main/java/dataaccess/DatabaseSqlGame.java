@@ -30,7 +30,7 @@ public class DatabaseSqlGame implements GameDAO {
                 }
             }
         } catch (SQLException ex) {
-            throw new ResponseException("Error with configuring the database");
+            throw new ResponseException("Error with configuring the game database");
         }
     }
 
@@ -183,7 +183,8 @@ public class DatabaseSqlGame implements GameDAO {
     }
     public GameData getGameFromGameName(String gameName) throws DataAccessException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameName=?")) {
+            String statement = "SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameName=?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
                 preparedStatement.setString(1,gameName);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if(resultSet.next()){

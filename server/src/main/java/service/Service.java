@@ -31,16 +31,16 @@ public class Service {
     }
 
     public RegisterResult register(RegisterRequest regReq) throws DataAccessException, BadRequest, AlreadyTakenException {
-        if(regReq.username() == null||regReq.password()==null||regReq.email()==null||regReq.password().isEmpty()){
-            throw new BadRequest("no username,password, or email");
+        if( regReq.password()== null||regReq.username()==null||regReq.email()==null||regReq.password().isEmpty()){
+            throw new BadRequest("couldnt find either a username, password, or email. Please check all three");
         }
         else if(userDAO.getUser(regReq.username())==null){
-            String authToken = generateRandomString();
-            AuthData authdata = new AuthData(authToken,regReq.username());
+            String token = generateRandomString();
+            AuthData authdata = new AuthData(token,regReq.username());
             authDAO.createAuth(authdata);
-//            AuthData auth = authDAO.getAuth(authdata.authToken());
+//
             userDAO.createUser(new UserData(regReq.username(),regReq.password(),regReq.email()));
-            RegisterResult regRes = new RegisterResult(regReq.username(), authToken);
+            RegisterResult regRes = new RegisterResult(regReq.username(), token);
             return regRes;
         }
         else{
@@ -98,11 +98,11 @@ public class Service {
     }
 
     public GameData  createGame(String gameName, String authToken) throws DataAccessException, UnauthorizedException, BadRequest {
-        if(gameName == null || authToken ==null || gameName.isBlank() || authToken.isBlank()){
-            throw new BadRequest("no game name or auth token");
+        if(authToken ==null ||gameName == null ||  gameName.isBlank() || authToken.isBlank()){
+            throw new BadRequest("no game name or auth token found. please check both");
         }
         else if (authDAO.getAuth(authToken)==null){
-            throw new UnauthorizedException("you cannot create a game if you are not logged in");
+            throw new UnauthorizedException("error : you cannot create a game if you are not logged in");
         }
         else{
             int gameID = gameDAO.createGame(gameName);

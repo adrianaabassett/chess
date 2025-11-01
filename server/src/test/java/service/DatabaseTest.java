@@ -228,7 +228,8 @@ public class DatabaseTest {
         clear();
         databaseSqlGame.createGame("june");
         int gameID = databaseSqlGame.getGameFromGameName("june").gameID();
-        assertEquals(databaseSqlGame.getUsername("WHITE",gameID),"june");
+        databaseSqlGame.updateGame(new GameData(gameID,"july",null,"june",new ChessGame()));
+        assertEquals(databaseSqlGame.getUsername("WHITE",gameID),"july");
     }
     //negative
     @Test
@@ -247,7 +248,7 @@ public class DatabaseTest {
         int gameID = databaseSqlGame.getGameFromGameName("gn").gameID();
         GameData gameData = new GameData(gameID,"w","b","gn",new ChessGame());
     databaseSqlGame.updateGame(gameData);
-    assertEquals("b",databaseSqlGame.getGame(4).blackUsername());
+    assertEquals("b",databaseSqlGame.getGame(gameID).blackUsername());
     }
     //negative
     //updategame

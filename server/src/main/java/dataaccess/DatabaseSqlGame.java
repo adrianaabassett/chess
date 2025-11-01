@@ -200,6 +200,9 @@ public class DatabaseSqlGame implements GameDAO {
 
     public void updateGame(GameData game) throws DataAccessException {
         try(var conn = DatabaseManager.getConnection()){
+            if(getGame(game.gameID())==null){
+                            throw new DataAccessException("cannot update game");
+            }
             var statement = "UPDATE gameTable SET WhiteUsername=?, BlackUsername=?, GameName=?, Game=? WHERE gameID=?";
             try(var ps = conn.prepareStatement(statement)){
                 ps.setString(1,game.whiteUsername());
@@ -210,10 +213,10 @@ public class DatabaseSqlGame implements GameDAO {
                 ps.setInt(5,game.gameID());
                 ps.executeUpdate();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                throw new DataAccessException("error updating game");
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("cannot update game");
         }
     }
 }

@@ -56,8 +56,8 @@ public class DatabaseSqlAuth implements AuthDAO {
         PreparedStatement ps = null;
         try {
             ps = conn.prepareStatement("INSERT INTO auth (AuthToken, Username) VALUES (?, ?)");
-            ps.setString(1,authData.authToken());
-            ps.setString(2,authData.username());
+            ps.setString(1, authData.authToken());
+            ps.setString(2, authData.username());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -68,16 +68,20 @@ public class DatabaseSqlAuth implements AuthDAO {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement("SELECT Username, AuthToken FROM auth WHERE AuthToken=?")) {
                 //capitalize
-                ps.setString(1,authToken);
+                ps.setString(1, authToken);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if(rs.next()){
+                    if (rs.next()) {
                         return new AuthData(authToken, rs.getString("Username"));
-                    }
-                    else{
-                        return null;
+                    } else {
+                        throw new DataAccessException("error nothing found in auth");
+
                     }
                     /// gets string from column labeled Username
+                } catch (Exception e) {
+                    throw new DataAccessException("error getting Auth from database");
                 }
+            } catch (Exception e) {
+                throw new DataAccessException("error getting Auth from database");
             }
         } catch (Exception e) {
             throw new DataAccessException("error getting Auth from database");
@@ -85,14 +89,24 @@ public class DatabaseSqlAuth implements AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-        var statement = "DELETE FROM auth WHERE AuthToken=?";
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1,authToken);
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT Username, AuthToken FROM auth WHERE AuthToken=?")) {
+                ps.setString(1, authToken);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        throw new DataAccessException("doesnt exist and cant be deleted");
+                    }
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            var statement = "DELETE FROM auth WHERE AuthToken=?";
+            var preparedStatement = conn.prepareStatement(statement);
+            preparedStatement.setString(1, authToken);
             preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new DataAccessException("failed to delete using AuthToken", ex);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-    }
 
+    }
 }

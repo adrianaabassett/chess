@@ -111,12 +111,41 @@ public class DatabaseSqlGame implements GameDAO {
         }
 
     }
+    public GameData getGameFromGameName(String gameName) throws DataAccessException {
+        try (Connection connection = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = connection.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName, Game FROM gameTable WHERE GameName=?")) {
+                ps.setString(1,gameName);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if(rs.next()){
+                        return new GameData(rs.getInt("GameID"), rs.getString("WhiteUsername"), rs.getString("BlackUsername"), rs.getString("GameName"), new Gson().fromJson(rs.getString("Game"), ChessGame.class));
+                    }
+                    else{
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("error getting GameTable from database");
+        }
+
+    }
 
     public List<GameData> listGames() throws DataAccessException {
         ArrayList<GameData> newGames = new ArrayList<>();
         try (Connection conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("SELECT GameID, WhiteUsername, BlackUsername, GameName,Game from gameTable")){
                 try (var rs = statement.executeQuery()){
+                    if(rs.next()){
+                        var gameID = rs.getInt("GameID");
+                        var whiteUsername = rs.getString("WhiteUsername");
+                        var blackUsername = rs.getString("BlackUsername");
+                        var gameName = rs.getString("GameName");
+                        var chessGame = new Gson().fromJson(rs.getString("Game"), ChessGame.class);
+                        newGames.add(new GameData(gameID, whiteUsername,blackUsername,gameName,chessGame));
+                    }
+                    else{
+                        throw new DataAccessException("no games available");
+                    }
                     while(rs.next()){
                         var gameID = rs.getInt("GameID");
                         var whiteUsername = rs.getString("WhiteUsername");
@@ -144,7 +173,6 @@ public class DatabaseSqlGame implements GameDAO {
             }
             else{
                 statement = "SELECT BlackUserName FROM gameTable WHERE GameID=?";
-
             }
             try (PreparedStatement ps = connection.prepareStatement(statement)) {
                 ps.setInt(1,gameID);
@@ -159,12 +187,15 @@ public class DatabaseSqlGame implements GameDAO {
                     else{
                         return null;
                     }
-                }}
+                }
+                else{
+                        throw new DataAccessException("error getting Username from gameTable database");
+                    }
+                }
             }
         } catch (Exception e) {
             throw new DataAccessException("error getting Username from gameTable database");
         }
-        return null;
     }
 
     public void updateGame(GameData game) throws DataAccessException {

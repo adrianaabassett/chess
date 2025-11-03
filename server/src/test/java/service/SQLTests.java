@@ -16,13 +16,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 // for simplicity's sake, I'm putting all of my testis in this file
-public class UnitTests {
+public class SQLTests {
     DatabaseSqlAuth authDatabase = new DatabaseSqlAuth();
     DatabaseSqlGame gameDatabase = new DatabaseSqlGame();
     DatabaseSqlUser userDatabase = new DatabaseSqlUser();
     Service userService = new Service(userDatabase, gameDatabase, authDatabase);
 
-    public UnitTests() throws ResponseException, DataAccessException {
+    public SQLTests() throws ResponseException, DataAccessException {
     }
 
 

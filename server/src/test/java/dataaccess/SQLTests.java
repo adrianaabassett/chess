@@ -1,6 +1,5 @@
-package service;
+package dataaccess;
 import chess.ChessGame;
-import dataaccess.*;
 import dataaccess.exceptions.*;
 import model.AuthData;
 import model.GameData;
@@ -8,6 +7,7 @@ import model.UserData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import recordrequests.RegisterRequest;
+import service.Service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -238,6 +238,23 @@ public class SQLTests {
         assertNull( databaseSqlGame.getUsername("nothing here but the void",4));
     }
 
+    @Test
+    @DisplayName("My own getting game from game name")
+    public void getGameFromUsernamePositive() throws DataAccessException {
+        clear();
+        databaseSqlGame.createGame("happy");
+        int gameID = databaseSqlGame.getGameFromGameName("happy").gameID();
+        databaseSqlGame.updateGame(new GameData(gameID,"sad",null,"happy",new ChessGame()));
+        assertEquals(databaseSqlGame.getUsername("WHITE",gameID),"sad");
+    }
+    @Test
+    @DisplayName("My own not getting game from game name")
+    public void getGameFromUsernameNegative() throws DataAccessException {
+        clear();
+        assertNull( databaseSqlGame.getGameFromGameName("nothing here but the void"));
+    }
+
+
     //updategame
     @Test
     @DisplayName("Updating game")
@@ -265,7 +282,7 @@ public class SQLTests {
         databaseSqlUser.createUser(new UserData("usern","passw","eem"));
         int gameID = databaseSqlGame.createGame("gamen");
         databaseSqlAuth.createAuth(new AuthData("tokwn","usern"));
-
+        clear();
         assertNull(databaseSqlUser.getUser("usern"));
         assertNull(databaseSqlGame.getGame(gameID));
         assertNull( databaseSqlAuth.getAuth("tokwn"));

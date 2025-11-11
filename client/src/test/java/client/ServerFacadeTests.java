@@ -20,7 +20,8 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-
+//be visible
+    //
     @Test
     public void sampleTest() {
         Assertions.assertTrue(true);

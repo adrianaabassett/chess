@@ -11,4 +11,9 @@ public class ResponseException extends Exception{
         super(message, ex);
 
     }
+
+    @Override
+    public String toString() {
+        return "ResponseException{}";
+    }
 }

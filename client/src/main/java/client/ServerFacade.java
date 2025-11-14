@@ -1,5 +1,6 @@
 package client;
 
+import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -13,10 +14,12 @@ import java.net.http.HttpResponse;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
-    private final String serverUrl;
-
-    public ServerFacade(String url) {
-        serverUrl = url;
+    private final String serverUrl ;
+    public ServerFacade(String serverUrl){
+        this.serverUrl = serverUrl;
+    }
+    public ServerFacade(){
+        this.serverUrl = "8080";
     }
     //the point of server facade is to be able to call the javalin things and it works and
     public UserData addUser(RegisterRequest regReq) throws ResponseException{
@@ -70,14 +73,14 @@ public class ServerFacade {
         }
         return request.build();
     }
-//
-//    private HttpRequest.BodyPublisher makeRequestBody(Object request) {
-//        if (request != null) {
-//            return BodyPublishers.ofString(new Gson().toJson(request));
-//        } else {
-//            return BodyPublishers.noBody();
-//        }
-//    }
+
+    private HttpRequest.BodyPublisher makeRequestBody(Object request) {
+        if (request != null) {
+            return HttpRequest.BodyPublishers.ofString(new Gson().toJson(request));
+        } else {
+            return HttpRequest.BodyPublishers.noBody();
+        }
+    }
 
     private HttpResponse<String> sendRequest(HttpRequest request) throws ResponseException {
         try {
@@ -92,10 +95,9 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw ResponseException.fromJson(body);
+                throw new ResponseException("nothing from the handle response");
             }
-
-            throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
+            throw new ResponseException("Other failure from handle response");
         }
 
         if (responseClass != null) {

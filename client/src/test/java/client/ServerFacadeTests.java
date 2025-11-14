@@ -6,8 +6,7 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 //how to import server facade
 //what t\]o put in that one server facade test
 //test and debug
@@ -42,9 +41,25 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @DisplayName("login")
     public void addUserTestPositive() throws ResponseException {
         AuthData authData = serverFacade.loginUser(new UserData("usern","pass","em"));
         assertNotNull(authData.authToken());
+    }
+
+    @Test
+    @DisplayName("already logged in")
+    public void addUserTestNegative() throws ResponseException{
+        serverFacade.loginUser(new UserData("usern","pass","em"));
+        AuthData authData = serverFacade.loginUser(new UserData("usern","pass","em"));
+        assertNull(authData.authToken());
+    }
+
+    @Test
+    @DisplayName("already logged in")
+    public void clearPositive() throws ResponseException{
+        serverFacade.clear();
+        assertDoesNotThrow();
     }
 
 

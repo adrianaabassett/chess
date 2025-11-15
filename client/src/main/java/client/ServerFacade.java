@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class ServerFacade {//represents the server, the middleman between th eclient
     private final HttpClient client = HttpClient.newHttpClient();
@@ -28,7 +29,7 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         if(loggedIn){
             throw new ResponseException("this is only for logged out profiles");
         }
-        var request = buildRequest("POST", "/user",regReq);
+        var request = buildRequest("POST", "/user",regReq, null);
         var response = sendRequest(request);
         loggedIn = true;
         return handleResponse(response,AuthData.class);
@@ -36,16 +37,13 @@ public class ServerFacade {//represents the server, the middleman between th ecl
 
     public void clear() throws ResponseException {
         loggedIn = false;
-        var request = buildRequest("DELETE", "/db",null);
+        var request = buildRequest("DELETE", "/db",null, null);
         var response = sendRequest(request);
         handleResponse(response,null);
     }
 
     public AuthData loginUser(UserData userData) throws ResponseException{
-        if(loggedIn){
-            throw new ResponseException("already logged in");
-        }
-        var request = buildRequest("POST","/session",userData);
+        var request = buildRequest("POST","/session",userData, null);
         var response = sendRequest(request);
         return handleResponse(response,AuthData.class);
     }
@@ -54,45 +52,48 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         if(!loggedIn){
             throw new ResponseException("not logged in and cannot log out");
         }
-        var request = buildRequest("DELETE", "/session", null);
+        var request = buildRequest("DELETE", "/session", null, authToken);
         var response = sendRequest(request);
         handleResponse(response,null);
     }
 
-    public GameData createGame(GameData gameData) throws ResponseException {
+    public GameData createGame(GameData gameData, String authToken) throws ResponseException {
         if(!loggedIn){
             throw new ResponseException("not logged in and cannot create a game");
         }
-        var request = buildRequest("POST", "/game",gameData);
+        var request = buildRequest("POST", "/game",gameData, authToken);
         var response = sendRequest(request);
         return handleResponse(response,GameData.class);
     }
 
-    public String listGames(String authToken) throws ResponseException{
+    public List<GameData> listGames(String authToken) throws ResponseException{
         if(!loggedIn){
         throw new ResponseException("not logged in and cannot complete this function");
         }
 
-        var request = buildRequest("GET", "/game",authToken);
+        var request = buildRequest("GET", "/game",null, authToken);
         var response = sendRequest(request);
-        return handleResponse(response,String.class);
+        return handleResponse(response,List.class);
     }
 
-    public void joinGame(String[] authAndColorAndInt) throws ResponseException {
+    public void joinGame(String[] colorAndInt, String authToken) throws ResponseException {
         if(!loggedIn){
         throw new ResponseException("not logged in and cannot complete this function");
         }
-        var request = buildRequest("PUT", "/game", authAndColorAndInt );//2 thing json
+        var request = buildRequest("PUT", "/game", colorAndInt, authToken );//2 thing json
         var response = sendRequest(request);
         handleResponse(response, null);
     }
 
-    private HttpRequest buildRequest(String method, String path, Object body) { //("POST", "/user",regReq);
+    private HttpRequest buildRequest(String method, String path, Object body, String authorization) { //("POST", "/user",regReq);
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
+        }
+        if(authorization != null){
+            request.header("authorization", authorization );
         }
         return request.build();
     }

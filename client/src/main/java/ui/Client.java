@@ -17,7 +17,8 @@ public class Client {
 
     public String repl(String input){
         var words = input.toLowerCase().split("");
-
+        //this reads from the input
+//this is the ui part
 return "aa";
     }
 

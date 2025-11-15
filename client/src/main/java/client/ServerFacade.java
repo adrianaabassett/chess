@@ -12,53 +12,76 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class ServerFacade {
+public class ServerFacade {//represents the server, the middleman between th eclient
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl ;
+    String authToken;
+    private boolean loggedIn = false;
     public ServerFacade(String serverUrl){
         this.serverUrl = serverUrl;
     }
     public ServerFacade(){
-        this.serverUrl = "8080";
+        this.serverUrl = "http://localhost:8080";
     }
     //the point of server facade is to be able to call the javalin things and it works and
-    public UserData addUser(RegisterRequest regReq) throws ResponseException{
+    public AuthData addUser(RegisterRequest regReq) throws ResponseException{
+        if(loggedIn){
+            throw new ResponseException("this is only for logged out profiles");
+        }
         var request = buildRequest("POST", "/user",regReq);
         var response = sendRequest(request);
-        return handleResponse(response,UserData.class);
+        loggedIn = true;
+        return handleResponse(response,AuthData.class);
     }
 
     public void clear() throws ResponseException {
+        loggedIn = false;
         var request = buildRequest("DELETE", "/db",null);
         var response = sendRequest(request);
         handleResponse(response,null);
     }
 
     public AuthData loginUser(UserData userData) throws ResponseException{
+        if(loggedIn){
+            throw new ResponseException("already logged in");
+        }
         var request = buildRequest("POST","/session",userData);
         var response = sendRequest(request);
         return handleResponse(response,AuthData.class);
     }
 
-    public void logoutUser(UserData userData) throws ResponseException{
+    public void logoutUser(String authToken) throws ResponseException{
+        if(!loggedIn){
+            throw new ResponseException("not logged in and cannot log out");
+        }
         var request = buildRequest("DELETE", "/session", null);
         var response = sendRequest(request);
         handleResponse(response,null);
     }
 
     public GameData createGame(GameData gameData) throws ResponseException {
+        if(!loggedIn){
+            throw new ResponseException("not logged in and cannot create a game");
+        }
         var request = buildRequest("POST", "/game",gameData);
         var response = sendRequest(request);
         return handleResponse(response,GameData.class);
     }
 
     public String listGames(String authToken) throws ResponseException{
+        if(!loggedIn){
+        throw new ResponseException("not logged in and cannot complete this function");
+        }
+
         var request = buildRequest("GET", "/game",authToken);
         var response = sendRequest(request);
         return handleResponse(response,String.class);
     }
 
 //    public void joinGame(imnotsuer String authToken, String playerColor, Integer gameID) throws ResponseException {
+//        if(!loggedIn){
+//        throw new ResponseException("not logged in and cannot complete this function");
+//        }
 //        var request = buildRequest("PUT", "/game", imenotesure);//2 thing json
 //        var response = sendRequest(request);
 //        handleResponse(response, null);
@@ -95,7 +118,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw new ResponseException("nothing from the handle response");
+                throw new ResponseException(body);
             }
             throw new ResponseException("Other failure from handle response");
         }

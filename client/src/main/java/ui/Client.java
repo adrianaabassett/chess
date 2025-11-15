@@ -3,6 +3,10 @@ package ui;
 import chess.ChessGame;
 import client.ServerFacade;
 import dataaccess.exceptions.ResponseException;
+import model.AuthData;
+import recordrequests.RegisterRequest;
+
+import java.util.Scanner;
 
 import static java.lang.System.out;
 
@@ -11,53 +15,70 @@ public class Client {
     //test in terminal how
     //repl
     //repl is read eval print loop
-    final String serverUrl;
+    String serverUrl = "http://localhost:8080";
+    boolean hasntQuit = true;
     boolean signedIn = false;
+    ServerFacade serverFacade = new ServerFacade(serverUrl);
     public Client(String serverUrl){
-        ServerFacade serverFacade = new ServerFacade(serverUrl);
       this.serverUrl = serverUrl;
+      serverFacade = new ServerFacade(serverUrl);
     }
 
-    public String repl(String input){
-        //this is where I parse the input to make it readible for my code
-        ServerFacade serverFacade = new ServerFacade(serverUrl);
-        ChessGame chessGame;
-        String[] inputPieces = input.toLowerCase().split("");
-        switch (inputPieces[0]){
-            case "help":
-                out.print(toStringHelp());
-                break;
-            case "register":
-                toStringRegister();
-                break;
-            case "login":
-                toStringLogin();
-                break;
 
-                //logged in
-
-            case "create":
-                toStringCreate();
-                break;
-
-            case "list":
-                toStringList();
-                break;
-
-            case "join":
-                toStringJoin();
-                break;
-
-            case "observe":
-                toStringObserve();
-
-            case "logout":
-                toStringLogout();
-
-            case "quit":
-                break;
+    public String repl(){
+        String input = "";
+        while(hasntQuit) {
+            if(signedIn){
+                out.print("\n[LOGGED_IN] >>> ");
+            }
+            else{
+                out.print("\n[LOGGED_OUT] >>> ");
+            }
+            Scanner scanner = new Scanner(System.in);
+            input = scanner.nextLine();
+            //this is where I parse the input to make it readible for my code
+            ServerFacade serverFacade = new ServerFacade(serverUrl);
+            ChessGame chessGame;
+            String[] inputPieces = input.toLowerCase().split("");
+            switch (inputPieces[0]) {
+                case "help":
+                    out.print(toStringHelp());
+                    break;
+                case "register":
+                    if(inputPieces.length>2){
+                    out.print(toStringRegister(inputPieces[1], inputPieces[2],inputPieces[3]));}
+//                    else{
+//                        out.
+//                    }
+                    break;
+//            case "login":
+//                toStringLogin();
+//                break;
+//
+//                //logged in
+//
+//            case "create":
+//                toStringCreate();
+//                break;
+//
+//            case "list":
+//                toStringList();
+//                break;
+//
+//            case "join":
+//                toStringJoin();
+//                break;
+//
+//            case "observe":
+//                toStringObserve();
+//
+//            case "logout":
+//                toStringLogout();
+//
+//            case "quit":
+//                break;
+            }
         }
-
 
         //this reads from the input
 //this is the ui part
@@ -84,8 +105,19 @@ return null;
         return result;
     }
 
-    private String toStringRegister(){
-        String result =
+    private String toStringRegister(String name, String pass, String email){
+        String result = "";
+        try{
+            AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
+
+         //   authData = ServerFacade.addUser(new RegisterRequest(name, pass, email));
+
+        }
+        catch(ResponseException e){
+
+        }
+        return null;
+
     }
 
 }

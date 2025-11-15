@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.ResponseException;
 import model.AuthData;
@@ -165,7 +166,7 @@ public class ServerFacadeTests {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         serverFacade.createGame(new GameData(1, "2","3","4", new ChessGame()),authData.authToken());
-        assertDoesNotThrow(()->serverFacade.listGames(authData.authToken()));
+        assertDoesNotThrow(()-> (serverFacade.listGames(authData.authToken())));
     }
 
     //list game neg

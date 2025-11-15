@@ -7,11 +7,14 @@ import model.UserData;
 import dataaccess.exceptions.ResponseException;
 import recordrequests.RegisterRequest;
 
-import java.lang.reflect.Array;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.Array;
+import java.util.List;
+import java.util.Map;
 
 public class ServerFacade {//represents the server, the middleman between th eclient
     private final HttpClient client = HttpClient.newHttpClient();
@@ -66,14 +69,14 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         return handleResponse(response,GameData.class);
     }
 
-    public Array listGames(String authToken) throws ResponseException{
+    public Map<String, List<GameData>> listGames(String authToken) throws ResponseException{
         if(!loggedIn){
         throw new ResponseException("not logged in and cannot complete this function");
         }
 
         var request = buildRequest("GET", "/game",null, authToken);
         var response = sendRequest(request);
-        return handleResponse(response, Array.class);
+        return handleResponse(response, Map.class);
     }
 
     public void joinGame(String[] colorAndInt, String authToken) throws ResponseException {

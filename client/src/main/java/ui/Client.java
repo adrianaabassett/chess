@@ -1,7 +1,10 @@
 package ui;
 
+import chess.ChessGame;
 import client.ServerFacade;
 import dataaccess.exceptions.ResponseException;
+
+import static java.lang.System.out;
 
 public class Client {
     //all the help, create game,
@@ -17,11 +20,12 @@ public class Client {
 
     public String repl(String input){
         //this is where I parse the input to make it readible for my code
-
+        ServerFacade serverFacade = new ServerFacade(serverUrl);
+        ChessGame chessGame;
         String[] inputPieces = input.toLowerCase().split("");
         switch (inputPieces[0]){
             case "help":
-                toStringHelp();
+                out.print(toStringHelp());
                 break;
             case "register":
                 toStringRegister();
@@ -53,10 +57,36 @@ public class Client {
             case "quit":
                 break;
         }
+
+
         //this reads from the input
 //this is the ui part
 return null;
     }//json to md
+
+    private String toStringHelp() {
+        String result = "";
+        if (!signedIn){
+            result = result+"register <USERNAME> <PASSWORD> <EMAIL> - to create an account\n";
+            result = result+"login <USERNAME> <PASSWORD> - to play chess\n";
+            result = result+"quit - playing chess\n";
+            result = result+"help - with possible commands\n";
+        }
+        else{
+            result = result+"create <NAME> - a game\n";
+            result = result+"list - games\n";
+            result = result+"join <ID> [WHITE|BLACK] - a game\n";
+            result = result+"observe <ID> - a game\n";
+            result = result+"logout - when you are done\n";
+            result = result+"quit - playing chess\n";
+            result = result+"help - with possible commands\n";
+        }
+        return result;
+    }
+
+    private String toStringRegister(){
+        String result =
+    }
 
 }
 

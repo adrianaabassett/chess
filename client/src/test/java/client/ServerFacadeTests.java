@@ -115,7 +115,6 @@ public class ServerFacadeTests {
     public void logoutNegative() throws ResponseException{
         serverFacade.clear();
         assertThrows(ResponseException.class, () -> serverFacade.logoutUser("never gonna give"));
-
     }
 
     //create game pos
@@ -156,15 +155,54 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, () -> serverFacade.createGame(gameData));
     }
 
-
     //list game pos
+    @Test
+    @DisplayName("Listing all the games")
+    public void listGamesPositive() throws ResponseException{
+        serverFacade.clear();
+        AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
+        serverFacade.createGame(new GameData(1, "2","3","4", new ChessGame()));
+        assertDoesNotThrow(()->serverFacade.listGames(authData.authToken()));
+    }
 
     //list game neg
+    @Test
+    @DisplayName("cant list because you arent logged in")
+    public void listGamesNegative() throws ResponseException{
+        serverFacade.clear();
+        AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
+        assertDoesNotThrow(()->serverFacade.listGames("never gonna give you up never gonna"));
+    }
 
     //join game pos
+    @Test
+    @DisplayName("joining game")
+    public void JoinGamesPositive() throws ResponseException{
+        serverFacade.clear();
+       //just put the join games here
+    }
 
     //join game neg
-
-    //
+    @Test
+    @DisplayName("cant join game not logged in")
+    public void JoinGamesNegative() throws ResponseException{
+        serverFacade.clear();
+        serverFacade.createGame(new GameData(12, null, null, "namegame",new ChessGame()));
+        String[] params = new String[]{"not an auth token","WHITE","12"};
+        assertDoesNotThrow(()->serverFacade.joinGame(params));
+        //authToken, String playerColor, Integer gameID
+        //just put the join games here
+        //not logged in
+    }
+    @Test
+    @DisplayName("cant join game no games")
+    public void JoinGamesNegativeTwo() throws ResponseException{
+        serverFacade.clear();
+        AuthData authData = serverFacade.addUser(new RegisterRequest("name","password","email"));
+        String[] params = new String[]{authData.authToken(),"WHITE","12"};
+        assertDoesNotThrow(()->serverFacade.joinGame(params));
+        //just put the join games here
+        //no games to join
+    }
 
 }

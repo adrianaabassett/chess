@@ -78,14 +78,14 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         return handleResponse(response,String.class);
     }
 
-//    public void joinGame(imnotsuer String authToken, String playerColor, Integer gameID) throws ResponseException {
-//        if(!loggedIn){
-//        throw new ResponseException("not logged in and cannot complete this function");
-//        }
-//        var request = buildRequest("PUT", "/game", imenotesure);//2 thing json
-//        var response = sendRequest(request);
-//        handleResponse(response, null);
-//    }
+    public void joinGame(String[] authAndColorAndInt) throws ResponseException {
+        if(!loggedIn){
+        throw new ResponseException("not logged in and cannot complete this function");
+        }
+        var request = buildRequest("PUT", "/game", authAndColorAndInt );//2 thing json
+        var response = sendRequest(request);
+        handleResponse(response, null);
+    }
 
     private HttpRequest buildRequest(String method, String path, Object body) { //("POST", "/user",regReq);
         var request = HttpRequest.newBuilder()

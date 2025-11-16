@@ -1,13 +1,14 @@
 package ui;
-
 import chess.ChessGame;
 import client.ServerFacade;
 import dataaccess.exceptions.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import recordrequests.RegisterRequest;
-
+import server.Server;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -20,15 +21,42 @@ public class Client {
     //test in terminal how
     //repl
     //repl is read eval print loop
-    String serverUrl = "http://localhost:8080";
+
+//    private static Server server;
+//    String serverUrl = "http://localhost:8080";
+//
+private static Server server;
+    ServerFacade serverFacade = new ServerFacade();
+
+    public Client(String serverUrl){
+      serverFacade = new ServerFacade(serverUrl);
+    }
+
+    @BeforeAll
+    public static void init() {
+        server = new Server();
+        var port = server.run(8080);
+        System.out.println("Started test HTTP server on " + port);
+        /////  UserData userData = new Gson().fromJson(ctx.body(),UserData.class);
+    }
+
+    @AfterAll
+    static void stopServer() {
+        server.stop();
+    }
+
+    ChessGame chessGame;
     boolean hasntQuit = true;
     boolean signedIn = false;
     String authToken;
-    ServerFacade serverFacade = new ServerFacade(serverUrl);
-    public Client(String serverUrl){
-      this.serverUrl = serverUrl;
-      serverFacade = new ServerFacade(serverUrl);
-    }
+
+//    ServerFacade serverFacade = new ServerFacade(serverUrl);
+
+//    public Client(String serverUrl){
+//      this.serverUrl = serverUrl;
+//      serverFacade = new ServerFacade(serverUrl);
+//    }
+
 
 
     public void repl() throws ResponseException {
@@ -43,8 +71,8 @@ public class Client {
             Scanner scanner = new Scanner(System.in);
             input = scanner.nextLine();
             //this is where I parse the input to make it readible for my code
-            ServerFacade serverFacade = new ServerFacade(serverUrl);
-            ChessGame chessGame;
+//            ServerFacade serverFacade = new ServerFacade(serverUrl);
+
             String[] inputPieces = input.toLowerCase().split(" ");
             switch (inputPieces[0]) {
                 case "help":

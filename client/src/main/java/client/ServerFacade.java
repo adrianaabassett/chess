@@ -16,6 +16,8 @@ import java.sql.Array;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.System.out;
+
 public class ServerFacade {//represents the server, the middleman between th eclient
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl ;
@@ -35,7 +37,10 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         var request = buildRequest("POST", "/user",regReq, null);
         var response = sendRequest(request);
         loggedIn = true;
+        String lakdsjfh =  "alksjdfhlkajshdf";
         return handleResponse(response,AuthData.class);
+
+
     }
 
     public void clear() throws ResponseException {
@@ -124,6 +129,7 @@ public class ServerFacade {//represents the server, the middleman between th ecl
             if (body != null) {
                 throw new ResponseException(body);
             }
+            out.println("" + status);
             throw new ResponseException("Other failure from handle response");
         }
 

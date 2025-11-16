@@ -148,17 +148,6 @@ public class ServerFacadeTests {
         GameData gameData = new GameData(12, null, null,null, new ChessGame());
         assertThrows(ResponseException.class, () -> serverFacade.createGame(gameData, authData.authToken()));
     }
-
-//    @Test
-//    @DisplayName("Creating a game already been made")
-//    public void createGameNegativeThree() throws ResponseException{
-//        serverFacade.clear();
-//        AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
-//        GameData gameData = new GameData(12, "you", "up","never", new ChessGame());
-//        serverFacade.createGame(gameData, authData.authToken());
-//        assertThrows(ResponseException.class, () -> serverFacade.createGame(gameData, authData.authToken()));
-//    }
-
     //list game pos
     @Test
     @DisplayName("Listing all the games")

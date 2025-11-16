@@ -17,6 +17,8 @@ import service.Service;
 
 import java.util.Map;
 
+import static java.lang.System.out;
+
 public class Handler {
     private static final Logger LOG = LoggerFactory.getLogger(Handler.class);
     //UserService userService = new UserService;
@@ -29,9 +31,13 @@ public class Handler {
     //it is an Authdata because thats what the register result has
     public void registerHandler(Context ctx) throws DataAccessException, BadRequest {
         //the context object has a body which is the json string
+        out.println("got to register handler");
         try {
+            out.println("started trying ");
                 RegisterRequest regReq = new Gson().fromJson(ctx.body(), RegisterRequest.class);
+            out.println("made request");
         RegisterResult registerResult = service.register(regReq);
+            out.println("made result");
             ctx.status(200);
             //ctx.result("{}");
             ctx.json(new Gson().toJson(registerResult));

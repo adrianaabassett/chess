@@ -4,6 +4,8 @@ import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.ResponseException;
 import io.javalin.*;
 
+import static java.lang.System.out;
+
 public class Server {
 
     //create the hashmap memories here so that there will only be one of each
@@ -47,6 +49,7 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
+        out.println("got to server");
         Handler handler = new Handler(memoryUser,memoryGame,memoryAuth);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 

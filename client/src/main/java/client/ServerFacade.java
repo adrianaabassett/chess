@@ -130,6 +130,7 @@ public class ServerFacade {//represents the server, the middleman between th ecl
                 throw new ResponseException(body);
             }
             out.println("" + status);
+            out.println("sdfgsdfg");
             throw new ResponseException("Other failure from handle response");
         }
 

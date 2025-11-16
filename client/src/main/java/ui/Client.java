@@ -17,45 +17,28 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Client {
+    private ServerFacade server;
+    private String serverUrl;
     //all the help, create game,
     //test in terminal how
     //repl
     //repl is read eval print loop
-
 //    private static Server server;
 //    String serverUrl = "http://localhost:8080";
 //
-private static Server server;
     ServerFacade serverFacade = new ServerFacade();
 
     public Client(String serverUrl){
       serverFacade = new ServerFacade(serverUrl);
+      this.serverUrl = serverUrl;
     }
 
-    @BeforeAll
-    public static void init() {
-        server = new Server();
-        var port = server.run(8080);
-        System.out.println("Started test HTTP server on " + port);
-        /////  UserData userData = new Gson().fromJson(ctx.body(),UserData.class);
-    }
-
-    @AfterAll
-    static void stopServer() {
-        server.stop();
-    }
 
     ChessGame chessGame;
     boolean hasntQuit = true;
     boolean signedIn = false;
-    String authToken;
+    private String authToken;
 
-//    ServerFacade serverFacade = new ServerFacade(serverUrl);
-
-//    public Client(String serverUrl){
-//      this.serverUrl = serverUrl;
-//      serverFacade = new ServerFacade(serverUrl);
-//    }
 
 
 
@@ -86,11 +69,11 @@ private static Server server;
                     }
                     break;
             case "login":
-                if(inputPieces.length < 4) {
+                if(inputPieces.length < 3) {
                     out.println("Not enough variables. Please enter your username, password, and email");
                 }
                 else {
-                    out.print(toStringLogin(inputPieces[1], inputPieces[2], inputPieces[3]));
+                    out.print(toStringLogin(inputPieces[1], inputPieces[2]));
                 }
                 break;
 //                logged in
@@ -159,10 +142,10 @@ private static Server server;
 
     }
 
-    private String toStringLogin (String username, String password, String email){
+    private String toStringLogin (String username, String password){
         String result = "";
         try{
-            AuthData authData = serverFacade.loginUser(new UserData(username,password,email));
+            AuthData authData = serverFacade.loginUser(new UserData(username,password,null));//aaaaaaaaaaa
         }catch(ResponseException e){
             result = "\nWelcome, " + username +"\n";
         }

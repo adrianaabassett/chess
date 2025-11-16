@@ -4,11 +4,16 @@ import chess.ChessGame;
 import client.ServerFacade;
 import dataaccess.exceptions.ResponseException;
 import model.AuthData;
+import model.GameData;
+import model.UserData;
 import recordrequests.RegisterRequest;
 
+import java.util.Random;
 import java.util.Scanner;
 
 import static java.lang.System.out;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Client {
     //all the help, create game,
@@ -18,6 +23,7 @@ public class Client {
     String serverUrl = "http://localhost:8080";
     boolean hasntQuit = true;
     boolean signedIn = false;
+    String authToken;
     ServerFacade serverFacade = new ServerFacade(serverUrl);
     public Client(String serverUrl){
       this.serverUrl = serverUrl;
@@ -25,7 +31,7 @@ public class Client {
     }
 
 
-    public String repl(){
+    public void repl() throws ResponseException {
         String input = "";
         while(hasntQuit) {
             if(signedIn){
@@ -39,7 +45,7 @@ public class Client {
             //this is where I parse the input to make it readible for my code
             ServerFacade serverFacade = new ServerFacade(serverUrl);
             ChessGame chessGame;
-            String[] inputPieces = input.toLowerCase().split("");
+            String[] inputPieces = input.toLowerCase().split(" ");
             switch (inputPieces[0]) {
                 case "help":
                     out.print(toStringHelp());
@@ -47,42 +53,48 @@ public class Client {
                 case "register":
                     if(inputPieces.length>2){
                     out.print(toStringRegister(inputPieces[1], inputPieces[2],inputPieces[3]));}
-//                    else{
-//                        out.
-//                    }
+                    else{
+                        out.print("Error: please include your username, password, and email");
+                    }
                     break;
-//            case "login":
-//                toStringLogin();
-//                break;
-//
-//                //logged in
-//
-//            case "create":
-//                toStringCreate();
-//                break;
-//
-//            case "list":
-//                toStringList();
-//                break;
-//
-//            case "join":
-//                toStringJoin();
-//                break;
-//
+            case "login":
+                if(inputPieces.length < 4) {
+                    out.println("Not enough variables. Please enter your username, password, and email");
+                }
+                else {
+                    out.print(toStringLogin(inputPieces[1], inputPieces[2], inputPieces[3]));
+                }
+                break;
+//                logged in
+
+            case "create":
+                out.print(toStringCreate(inputPieces[1]));
+                break;
+
+            case "list":
+                out.print(toStringList());
+                break;
+
+            case "join":
+                out.print(toStringJoin(inputPieces[1], inputPieces[2]));
+                break;
+
 //            case "observe":
-//                toStringObserve();
-//
-//            case "logout":
-//                toStringLogout();
-//
-//            case "quit":
+//                out.print(toStringObserve());
 //                break;
+
+            case "logout":
+                out.print(toStringLogout());
+                break;
+
+            case "quit":
+                hasntQuit = false;
+                break;
             }
         }
-
+    serverFacade.clear();
         //this reads from the input
 //this is the ui part
-return null;
     }//json to md
 
     private String toStringHelp() {
@@ -108,16 +120,75 @@ return null;
     private String toStringRegister(String name, String pass, String email){
         String result = "";
         try{
-            AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
-
-         //   authData = ServerFacade.addUser(new RegisterRequest(name, pass, email));
-
+            AuthData authData = serverFacade.addUser(new RegisterRequest(name,pass,email));
+            authToken = authData.authToken();
+            signedIn = true;
         }
         catch(ResponseException e){
-
+            result = result + e.toString() + " "+ e.getCause();
         }
-        return null;
+        return result;
 
+    }
+
+    private String toStringLogin (String username, String password, String email){
+        String result = "";
+        try{
+            AuthData authData = serverFacade.loginUser(new UserData(username,password,email));
+        }catch(ResponseException e){
+            result = "\nWelcome, " + username +"\n";
+        }
+        return result;
+    }
+
+    private String toStringCreate (String gameName){
+        String result = "";
+        GameData gameData = new GameData(generateRandomNum(), null, null,gameName, new ChessGame());
+        return result;
+    }
+    private int generateRandomNum(){
+        Random random = new Random();
+        return random.nextInt(1,1000000);
+    }
+    private String toStringList (){
+        String result = "";
+        try{
+            result = result + serverFacade.listGames(this.authToken);
+        }catch(ResponseException e){
+            result = "List unavailable";
+        }
+        return result;
+    }
+    private String toStringJoin (String color, String num){
+        String result = "";
+        try{
+            String[] colorAndInt = new String[2];
+            colorAndInt[0] = color;
+            colorAndInt[1]= num;
+            serverFacade.joinGame(colorAndInt,authToken);
+        }catch(ResponseException e){
+            result  = "cannot join game now";
+        }
+        return result;
+    }
+//
+//    private String toStringObserve (){
+//        String result = "";
+//        try{
+//
+//        }catch(ResponseException e){
+//
+//        }
+//        return result;
+//    }
+    private String toStringLogout (){
+        String result = "";
+        try{
+            serverFacade.logoutUser(authToken);
+        }catch(ResponseException e){
+            result = "error";
+        }
+        return result;
     }
 
 }

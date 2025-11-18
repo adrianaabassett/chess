@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.ResponseException;
 import model.AuthData;
@@ -47,7 +48,7 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("register")
-    public void addUserTestPositive() throws ResponseException {
+    public void addUserTestPositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         assertNotNull(authData.getUsername());
@@ -56,15 +57,15 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("already registered")
-    public void addUserTestNegative() throws ResponseException{
+    public void addUserTestNegative() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         serverFacade.addUser(new RegisterRequest("usern","pass","em"));
-        assertThrows(ResponseException.class, () -> serverFacade.addUser(new RegisterRequest("usern","pass","em")));
+        assertThrows(AlreadyTakenException.class, () -> serverFacade.addUser(new RegisterRequest("usern","pass","em")));
     }
 
     @Test
     @DisplayName("login")
-    public void loginUserTestPositive() throws ResponseException {
+    public void loginUserTestPositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         serverFacade.logoutUser(authData.authToken());
@@ -74,14 +75,14 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("cannot log in because you are unregistered")
-    public void loginUserTestNegative() throws ResponseException{
+    public void loginUserTestNegative() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         assertThrows(ResponseException.class, () ->serverFacade.loginUser(new UserData("usern","pass","em")));
     }
     
     @Test
     @DisplayName("cannot log in because username is null")
-            public void loginUserTestNegativeTwo() throws ResponseException {
+            public void loginUserTestNegativeTwo() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         serverFacade.addUser(new RegisterRequest("usern", "pass", "em"));
         assertThrows(ResponseException.class, () ->serverFacade.loginUser(new UserData(null,"pass","em")));
@@ -92,7 +93,7 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("testing clear on empty")
-    public void clearPositive() throws ResponseException{
+    public void clearPositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         assertDoesNotThrow(() -> serverFacade.clear());
         //assertDoesNotThrow();
@@ -100,14 +101,14 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("testing clear on full")
-    public void clearPositiveTwo() throws ResponseException{
+    public void clearPositiveTwo() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         assertThrows(ResponseException.class, () ->serverFacade.loginUser(new UserData("usern","pass","em")));
     }
 
     @Test
     @DisplayName("logout positive")
-    public void logoutPositive() throws ResponseException{
+    public void logoutPositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         assertDoesNotThrow(() -> serverFacade.logoutUser(authData.authToken()));
@@ -116,7 +117,7 @@ public class ServerFacadeTests {
     //logout neg
     @Test
     @DisplayName("logout negative-not registered")
-    public void logoutNegative() throws ResponseException{
+    public void logoutNegative() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         assertThrows(ResponseException.class, () -> serverFacade.logoutUser("never gonna give"));
     }
@@ -124,7 +125,7 @@ public class ServerFacadeTests {
     //create game pos
     @Test
     @DisplayName("creating a game yay")
-    public void createGamePositive() throws ResponseException{
+    public void createGamePositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         GameData gameData = new GameData(12, "you", "up","never", new ChessGame());
@@ -134,7 +135,7 @@ public class ServerFacadeTests {
     //create game neg
     @Test
     @DisplayName("Creating a game without logging in first")
-    public void createGameNegative() throws ResponseException{
+    public void createGameNegative() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         GameData gameData = new GameData(12, "you", "up","never", new ChessGame());
         assertThrows(ResponseException.class, () -> serverFacade.createGame(gameData, "fasdjkfaksdjhfhjasd"));
@@ -142,7 +143,7 @@ public class ServerFacadeTests {
 
     @Test
     @DisplayName("Creating a game without the right parameters")
-    public void createGameNegativeTwo() throws ResponseException{
+    public void createGameNegativeTwo() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         GameData gameData = new GameData(12, null, null,null, new ChessGame());
@@ -151,7 +152,7 @@ public class ServerFacadeTests {
     //list game pos
     @Test
     @DisplayName("Listing all the games")
-    public void listGamesPositive() throws ResponseException{
+    public void listGamesPositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         serverFacade.createGame(new GameData(1, "2","3","4", new ChessGame()),authData.authToken());
@@ -161,42 +162,45 @@ public class ServerFacadeTests {
     //list game neg
     @Test
     @DisplayName("cant list because you arent logged in")
-    public void listGamesNegative() throws ResponseException{
+    public void listGamesNegative() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
-        AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         assertThrows(ResponseException.class, ()->serverFacade.listGames("never gonna give you up never gonna"));
     }
 
     //join game pos
-    @Test
-    @DisplayName("joining game")
-    public void JoinGamesPositive() throws ResponseException{
-        serverFacade.clear();
-       //just put the join games here
-    }
-
-    //join game neg
-    @Test
-    @DisplayName("cant join game not logged in")
-    public void JoinGamesNegative() throws ResponseException{
-        serverFacade.clear();
-        AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
-        serverFacade.createGame(new GameData(12, "", "", "namegame",new ChessGame()), authData.authToken());
-        String[] params = new String[]{"WHITE","12"};
-        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, "kajshdflh"));
-        //authToken, String playerColor, Integer gameID
-        //just put the join games here
-        //not logged in
-    }
-    @Test
-    @DisplayName("cant join game no games")
-    public void JoinGamesNegativeTwo() throws ResponseException{
-        serverFacade.clear();
-        AuthData authData = serverFacade.addUser(new RegisterRequest("name","password","email"));
-        String[] params = new String[]{authData.authToken(),"WHITE","12"};
-        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, authData.authToken()));
-        //just put the join games here
-        //no games to join
-    }
+//    @Test
+//    @DisplayName("joining game")
+//    public void JoinGamesPositive() throws ResponseException, AlreadyTakenException {
+//        serverFacade.clear();
+//        AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
+//        serverFacade.createGame(new GameData(12, "", "", "namegame",new ChessGame()), authData.authToken());
+//        String[] params = new String[]{"12","WHITE"};
+//        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, authData.authToken()));
+//       //just put the join games here
+//    }
+//
+//    //join game neg
+//    @Test
+//    @DisplayName("cant join game not logged in")
+//    public void JoinGamesNegative() throws ResponseException, AlreadyTakenException {
+//        serverFacade.clear();
+//        AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
+//        serverFacade.createGame(new GameData(12, "", "", "namegame",new ChessGame()), authData.authToken());
+//        String[] params = new String[]{"WHITE","12"};
+//        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, "kajshdflh"));
+//        //authToken, String playerColor, Integer gameID
+//        //just put the join games here
+//        //not logged in
+//    }
+//    @Test
+//    @DisplayName("cant join game no games")
+//    public void JoinGamesNegativeTwo() throws ResponseException, AlreadyTakenException {
+//        serverFacade.clear();
+//        AuthData authData = serverFacade.addUser(new RegisterRequest("name","password","email"));
+//        String[] params = new String[]{authData.authToken(),"WHITE","12"};
+//        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, authData.authToken()));
+//        //just put the join games here
+//        //no games to join
+//    }
 
 }

@@ -1,10 +1,12 @@
 package client;
 
 import com.google.gson.Gson;
+import dataaccess.exceptions.AlreadyTakenException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import dataaccess.exceptions.ResponseException;
+import recordrequests.JoinGameRequest;
 import recordrequests.RegisterRequest;
 
 
@@ -21,7 +23,6 @@ import static java.lang.System.out;
 public class ServerFacade {//represents the server, the middleman between th eclient
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl ;
-    private boolean loggedIn = false;
     private String authToken = "";
     public ServerFacade(String serverUrl){
         this.serverUrl = serverUrl;
@@ -30,65 +31,56 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         this.serverUrl = "http://localhost:8080";
     }
     //the point of server facade is to be able to call the javalin things and it works and
-    public AuthData addUser(RegisterRequest regReq) throws ResponseException{
-        if(loggedIn){
-            throw new ResponseException("this is only for logged out profiles");
-        }
+    public AuthData addUser(RegisterRequest regReq) throws ResponseException, AlreadyTakenException {
+
         var request = buildRequest("POST", "/user",regReq, null);
         var response = sendRequest(request);
-        loggedIn = true;
+
         String lakdsjfh =  "alksjdfhlkajshdf";
         return handleResponse(response,AuthData.class);
-
-
     }
 
-    public void clear() throws ResponseException {
-        loggedIn = false;
+    public void clear() throws ResponseException, AlreadyTakenException {
         var request = buildRequest("DELETE", "/db",null, null);
         var response = sendRequest(request);
         handleResponse(response,null);
     }
 
-    public AuthData loginUser(UserData userData) throws ResponseException{
+    public AuthData loginUser(UserData userData) throws ResponseException, AlreadyTakenException {
         var request = buildRequest("POST","/session",userData, null);
         var response = sendRequest(request);
         return handleResponse(response,AuthData.class);
     }
 
-    public void logoutUser(String authToken) throws ResponseException{
-        if(!loggedIn){
-            throw new ResponseException("not logged in and cannot log out");
-        }
+    public void logoutUser(String authToken) throws ResponseException, AlreadyTakenException {
+
         var request = buildRequest("DELETE", "/session", null, authToken);
         var response = sendRequest(request);
         handleResponse(response,null);
     }
 
-    public GameData createGame(GameData gameData, String authToken) throws ResponseException {
-        if(!loggedIn){
-            throw new ResponseException("not logged in and cannot create a game");
-        }
+    public GameData createGame(GameData gameData, String authToken) throws ResponseException, AlreadyTakenException {
+//        if(!loggedIn){
+//            throw new ResponseException("not logged in and cannot create a game");
+//        }
         var request = buildRequest("POST", "/game",gameData, authToken);
         var response = sendRequest(request);
         return handleResponse(response,GameData.class);
     }
 
-    public Map<String, List<GameData>> listGames(String authToken) throws ResponseException{
-        if(!loggedIn){
-        throw new ResponseException("not logged in and cannot complete this function");
-        }
+    public Map<String, List<GameData>> listGames(String authToken) throws ResponseException, AlreadyTakenException {
+//        if(!loggedIn){
+//        throw new ResponseException("not logged in and cannot complete this function");
+//        }
 
         var request = buildRequest("GET", "/game",null, authToken);
         var response = sendRequest(request);
         return handleResponse(response, Map.class);
     }
 
-    public void joinGame(String[] colorAndInt, String authToken) throws ResponseException {
-        if(!loggedIn){
-        throw new ResponseException("not logged in and cannot complete this function");
-        }
-        var request = buildRequest("PUT", "/game", colorAndInt, authToken );//2 thing json
+    public void joinGame(JoinGameRequest joinGameRequest, String authToken) throws ResponseException, AlreadyTakenException {
+//
+        var request = buildRequest("PUT", "/game", joinGameRequest, authToken );//2 thing json
         var response = sendRequest(request);
         handleResponse(response, null);
     }
@@ -122,15 +114,16 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         }
     }
 
-    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
+    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException, AlreadyTakenException{
         var status = response.statusCode();
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
+                if (status == 403){
+                    throw new AlreadyTakenException(body);
+                }
                 throw new ResponseException(body);
             }
-            out.println("" + status);
-            out.println("sdfgsdfg");
             throw new ResponseException("Other failure from handle response");
         }
 

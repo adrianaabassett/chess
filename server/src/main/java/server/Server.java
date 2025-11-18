@@ -49,7 +49,7 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        out.println("got to server");
+
         Handler handler = new Handler(memoryUser,memoryGame,memoryAuth);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 

@@ -110,9 +110,7 @@ public class Client {
 
                 }
                 else {
-                    out.println("," + inputPieces[1] + ",");
-                    out.println("," +inputPieces[2] + ",");
-                    out.print(toStringJoin(inputPieces[1], inputPieces[2]));
+                    out.print(toStringJoin(games.get(Integer.parseInt(inputPieces[1])-1), inputPieces[2]));
                 }
                 break;
 
@@ -234,10 +232,9 @@ public class Client {
         if(color.equals("white") || color.equals("black")) {
             try {
                 String[] params;
-
                 if(color.equals("white")){params = new String[]{num,"WHITE"};}
                 else{params = new String[]{num,"BLACK"};}
-                JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), Integer.parseInt(num));
+                JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), Integer.parseInt(games.get(Integer.parseInt(num)))-1);
                 serverFacade.joinGame(joinGameRequest, authToken);
                 out.println("Game joined!");
                 if (color.equals("white")){out.print(fakeBoard());}

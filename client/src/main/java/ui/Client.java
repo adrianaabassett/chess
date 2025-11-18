@@ -79,7 +79,7 @@ public class Client {
 
 
                 case "pretend":
-                    fakeBoard();
+                    getBoard();
                     break;
 
             case "login":
@@ -110,12 +110,12 @@ public class Client {
 
                 }
                 else {
-                    out.print(toStringJoin(games.get(Integer.parseInt(inputPieces[1])-1), inputPieces[2]));
+                    out.print(toStringJoin(Integer.parseInt(games.get(Integer.parseInt(inputPieces[1])-1)), inputPieces[2]));
                 }
                 break;
 
             case "observe":
-                out.print(fakeBoard());
+                out.print(getBoard());
                 break;
 
             case "logout":
@@ -227,18 +227,22 @@ public class Client {
         }
         return result;
     }
-    private String toStringJoin (String num, String color){
+    private String toStringJoin (int num, String color){
         String result = "";
         if(color.equals("white") || color.equals("black")) {
             try {
-                String[] params;
-                if(color.equals("white")){params = new String[]{num,"WHITE"};}
-                else{params = new String[]{num,"BLACK"};}
-                JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), Integer.parseInt(games.get(Integer.parseInt(num)))-1);
+//                String[] params;
+//                if(color.equals("white")){params = new String[]{num,"WHITE"};}
+//                else{params = new String[]{num,"BLACK"};}
+////                num = num;
+//                String df = games.get(Integer.parseInt(num));
+                //Integer.parseInt(games.get(Integer.parseInt(num)))-1);
+                JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), num);
+                //JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), Integer.parseInt(games.get(Integer.parseInt(num)))-1);
                 serverFacade.joinGame(joinGameRequest, authToken) ;
                 out.println("Game joined!");
-                if (color.equals("white")){out.print(fakeBoard());}
-                if (color.equals("black")){out.print(fakeBoardBlack());}
+                if (color.equals("white")){out.print(getBoard());}
+                if (color.equals("black")){out.print(getBoardBlack());}
             } catch (ResponseException | AlreadyTakenException e) {
                 e.getMessage();
                 result = "cannot join game now, please check your input ";
@@ -273,12 +277,12 @@ public class Client {
         return result;
     }
 
-    private String fakeBoard(){
+    private String getBoard(){
         out.print(boardToString(new ChessGame(), "WHITE"));
         return "";
     }
 
-    private String fakeBoardBlack(){
+    private String getBoardBlack(){
         out.print(boardToString(new ChessGame(), "BLACK"));
         return "";
     }

@@ -235,7 +235,7 @@ public class Client {
                 if(color.equals("white")){params = new String[]{num,"WHITE"};}
                 else{params = new String[]{num,"BLACK"};}
                 JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), Integer.parseInt(games.get(Integer.parseInt(num)))-1);
-                serverFacade.joinGame(joinGameRequest, authToken);
+                serverFacade.joinGame(joinGameRequest, authToken) ;
                 out.println("Game joined!");
                 if (color.equals("white")){out.print(fakeBoard());}
                 if (color.equals("black")){out.print(fakeBoardBlack());}

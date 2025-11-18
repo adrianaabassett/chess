@@ -26,15 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Client {
-    private ServerFacade server;
     private String serverUrl;
-    //all the help, create game,
-    //test in terminal how
-    //repl
-    //repl is read eval print loop
-//    private static Server server;
-//    String serverUrl = "http://localhost:8080";
-//
     ServerFacade serverFacade = new ServerFacade();
 
     public Client(String serverUrl){
@@ -193,12 +185,13 @@ public class Client {
     private String toStringCreate (String gameName){
         try{
         String result = "";
-        int randomNum = generateRandomNum();
-        GameData gameData = new GameData(randomNum, null, null,gameName, new ChessGame());
-        serverFacade.createGame(gameData, authToken);
+        GameData gameData = serverFacade.createGame(gameName, authToken);
+        //int randomNum = generateRandomNum();
+        //GameData gameData = new GameData(randomNum, null, null,gameName, new ChessGame());
         result = result + gameName + " created, type list to list games";
-        games.add(randomNum + "");
+        games.add(gameData.gameID() + "");
         gameNames.add(gameName);
+        //out.println(randomNum);
         return result;
         } catch (ResponseException e) {
             return "Can't create a game right now. Please make sure you're logged in";
@@ -206,17 +199,17 @@ public class Client {
             return "error creating game";
         }
     }
-    private int generateRandomNum(){
-        Random random = new Random();
-        return random.nextInt(1,1000000);
-    }
+//    private int generateRandomNum(){
+//        Random random = new Random();
+//        return random.nextInt(1,1000000);
+//    }
     private String toStringList (){
         String result = "";
         try{
             result = result + "games:\n";
             int i = 1;
             for(String gameName : gameNames){
-                result = result + gameName + " "+ i+ "\n";
+                result = result + i + gameName + "\n";
                 i++;
             }
             serverFacade.listGames(this.authToken);

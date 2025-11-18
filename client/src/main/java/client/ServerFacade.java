@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import dataaccess.exceptions.ResponseException;
+import recordrequests.CreateGameRequest;
 import recordrequests.JoinGameRequest;
 import recordrequests.RegisterRequest;
 
@@ -59,14 +60,15 @@ public class ServerFacade {//represents the server, the middleman between th ecl
         handleResponse(response,null);
     }
 
-    public GameData createGame(GameData gameData, String authToken) throws ResponseException, AlreadyTakenException {
+    public GameData createGame(String gameName, String authToken) throws ResponseException, AlreadyTakenException {
 //        if(!loggedIn){
 //            throw new ResponseException("not logged in and cannot create a game");
 //        }
-        var request = buildRequest("POST", "/game",gameData, authToken);
+        var request = buildRequest("POST", "/game",new CreateGameRequest(gameName), authToken);
         var response = sendRequest(request);
         return handleResponse(response,GameData.class);
     }
+
 
     public Map<String, List<GameData>> listGames(String authToken) throws ResponseException, AlreadyTakenException {
 //        if(!loggedIn){

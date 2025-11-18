@@ -9,6 +9,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import recordrequests.JoinGameRequest;
 import recordrequests.RegisterRequest;
 import server.Server;
 
@@ -129,7 +130,7 @@ public class ServerFacadeTests {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
         GameData gameData = new GameData(12, "you", "up","never", new ChessGame());
-        assertDoesNotThrow(() -> serverFacade.createGame(gameData, authData.authToken() ));
+        assertDoesNotThrow(() -> serverFacade.createGame("gameData", authData.authToken() ));
         assertEquals(12, gameData.gameID());
     }
     //create game neg
@@ -138,24 +139,17 @@ public class ServerFacadeTests {
     public void createGameNegative() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         GameData gameData = new GameData(12, "you", "up","never", new ChessGame());
-        assertThrows(ResponseException.class, () -> serverFacade.createGame(gameData, "fasdjkfaksdjhfhjasd"));
+        assertThrows(ResponseException.class, () -> serverFacade.createGame("gameData", "fasdjkfaksdjhfhjasd"));
     }
 
-    @Test
-    @DisplayName("Creating a game without the right parameters")
-    public void createGameNegativeTwo() throws ResponseException, AlreadyTakenException {
-        serverFacade.clear();
-        AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
-        GameData gameData = new GameData(12, null, null,null, new ChessGame());
-        assertThrows(ResponseException.class, () -> serverFacade.createGame(gameData, authData.authToken()));
-    }
-    //list game pos
+//    list game pos
     @Test
     @DisplayName("Listing all the games")
     public void listGamesPositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("usern","pass","em"));
-        serverFacade.createGame(new GameData(1, "2","3","4", new ChessGame()),authData.authToken());
+        serverFacade.createGame("chess",authData.authToken());
+        serverFacade.createGame("ssehc",authData.authToken());
         assertDoesNotThrow(()-> (serverFacade.listGames(authData.authToken())));
     }
 
@@ -168,39 +162,39 @@ public class ServerFacadeTests {
     }
 
     //join game pos
-//    @Test
-//    @DisplayName("joining game")
-//    public void JoinGamesPositive() throws ResponseException, AlreadyTakenException {
-//        serverFacade.clear();
-//        AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
-//        serverFacade.createGame(new GameData(12, "", "", "namegame",new ChessGame()), authData.authToken());
-//        String[] params = new String[]{"12","WHITE"};
-//        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, authData.authToken()));
-//       //just put the join games here
-//    }
-//
-//    //join game neg
-//    @Test
-//    @DisplayName("cant join game not logged in")
-//    public void JoinGamesNegative() throws ResponseException, AlreadyTakenException {
-//        serverFacade.clear();
-//        AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
-//        serverFacade.createGame(new GameData(12, "", "", "namegame",new ChessGame()), authData.authToken());
-//        String[] params = new String[]{"WHITE","12"};
-//        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, "kajshdflh"));
-//        //authToken, String playerColor, Integer gameID
-//        //just put the join games here
-//        //not logged in
-//    }
-//    @Test
-//    @DisplayName("cant join game no games")
-//    public void JoinGamesNegativeTwo() throws ResponseException, AlreadyTakenException {
-//        serverFacade.clear();
-//        AuthData authData = serverFacade.addUser(new RegisterRequest("name","password","email"));
-//        String[] params = new String[]{authData.authToken(),"WHITE","12"};
-//        assertThrows(ResponseException.class, ()->serverFacade.joinGame(params, authData.authToken()));
-//        //just put the join games here
-//        //no games to join
-//    }
+    @Test
+    @DisplayName("joining game")
+    public void JoinGamesPositive() throws ResponseException, AlreadyTakenException {
+        serverFacade.clear();
+        AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
+        GameData gameData = serverFacade.createGame("adfsd", authData.authToken());
+        JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(),"WHITE",gameData.gameID());
+        assertDoesNotThrow(()->serverFacade.joinGame(joinGameRequest, authData.authToken()));
+       //just put the join games here
+    }
+
+    //join game neg
+    @Test
+    @DisplayName("cant join game not logged in")
+    public void JoinGamesNegative() throws ResponseException, AlreadyTakenException {
+        serverFacade.clear();
+        AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
+        serverFacade.createGame("new", authData.authToken());
+        JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(),"WHITE",12);
+        assertThrows(ResponseException.class, ()->serverFacade.joinGame(joinGameRequest, "kajshdflh"));
+        //authToken, String playerColor, Integer gameID
+        //just put the join games here
+        //not logged in
+    }
+    @Test
+    @DisplayName("cant join game no games")
+    public void JoinGamesNegativeTwo() throws ResponseException, AlreadyTakenException {
+        serverFacade.clear();
+        AuthData authData = serverFacade.addUser(new RegisterRequest("name","password","email"));
+        JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(),"WHITE",12);
+        assertThrows(ResponseException.class, ()->serverFacade.joinGame(joinGameRequest, authData.authToken()));
+        //just put the join games here
+        //no games to join
+    }
 
 }

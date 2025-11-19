@@ -4,22 +4,16 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
-import com.google.gson.Gson;
 import dataaccess.exceptions.AlreadyTakenException;
 import dataaccess.exceptions.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import recordrequests.HoldsListGames;
 import recordrequests.JoinGameRequest;
 import recordrequests.RegisterRequest;
-import server.Server;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -33,7 +27,7 @@ public class Client {
       serverFacade = new ServerFacade(serverUrl);
       this.serverUrl = serverUrl;
     }
-
+    int lengthOfList = 0;
     boolean hasntQuit = true;
     boolean signedIn = false;
     private String authToken;
@@ -90,6 +84,7 @@ public class Client {
 
             case "create":
                 out.print(toStringCreate(inputPieces[1]));
+                lengthOfList ++;
                 break;
 
             case "list":
@@ -97,17 +92,29 @@ public class Client {
                 break;
 
             case "join":
+                try{
                 if(inputPieces.length < 3){
                     out.println("don't forget your gameID and color");
 
                 }
+                else if(Integer.parseInt(inputPieces[1])<1 || Integer.parseInt(inputPieces[1])>lengthOfList){
+                    out.println("There are no valid games corresponding to this number");
+                }
                 else {
                     out.print(toStringJoin(Integer.parseInt(games.get(Integer.parseInt(inputPieces[1])-1)), inputPieces[2]));
+                }
+                }
+                catch(NumberFormatException e){
+                    out.println("please make sure you join with a valid number/integer");
                 }
                 break;
 
             case "observe":
-                out.print(getBoard());
+                if(inputPieces.length < 1){
+                    out.print("please include which game you would like to observe");
+                }
+                else{  out.print(observe(inputPieces[1]));}
+
                 break;
 
             case "logout":
@@ -203,16 +210,37 @@ public class Client {
 //        Random random = new Random();
 //        return random.nextInt(1,1000000);
 //    }
-    private String toStringList (){
-        String result = "";
+    private String toStringList () throws ResponseException, AlreadyTakenException {
+        String result = "games:\n";
         try{
-            result = result + "games:\n";
-            int i = 1;
-            for(String gameName : gameNames){
-                result = result + i + gameName + "\n";
-                i++;
+            int i = 0;
+            HoldsListGames mapGames = serverFacade.listGames(this.authToken);
+             //theres only one value
+            List<GameData> listGames = mapGames.returnList();
+            if(listGames != null){
+            for(GameData listEach:listGames){
+                int t = i +1;
+                    result = result + "\n\n " + t + " " + listEach.gameName() + " \nblack player: ";
+                    if(listEach.blackUsername() == null || listEach.blackUsername().equals("")){
+                        result = result + "empty slot \nwhite player:";
+                    }
+                    else{result = result + listEach.blackUsername() + "\nwhite player:";}
+                    if(listEach.whiteUsername() == null || listEach.whiteUsername().equals("")){
+                        result = result + " empty slot";
+                    }
+                    else{
+                    result = result + listEach.whiteUsername() + " ";
+                    }
+                    i++;
             }
-            serverFacade.listGames(this.authToken);
+            }
+
+//            result = result + "games:\n";
+//            for(String gameName : gameNames){
+//                result = result + i + gameName + "\n";
+//                i++;
+//            }
+            //serverFacade.listGames(this.authToken);
         }catch(ResponseException e){
             result = "List unavailable";
         }catch(AlreadyTakenException e){
@@ -238,7 +266,7 @@ public class Client {
                 if (color.equals("black")){out.print(getBoardBlack());}
             } catch (ResponseException | AlreadyTakenException e) {
                 e.getMessage();
-                result = "cannot join game now, please check your input ";
+                result = "cannot join game now, someone has already taken this color";
             }
         }
         else{
@@ -248,15 +276,19 @@ public class Client {
 
     }
 //
-//    private String toStringObserve (){
-//        String result = "";
+    private String observe (String num){
+        String result = "";
 //        try{
-//
+            if(Objects.equals(num, "1")){
+            result = getBoard();}
+            else{
+                result = "There is nothing to observe";
+            }
 //        }catch(ResponseException e){
-//
+//            result = "asdasdf";
 //        }
-//        return result;
-//    }
+        return result;
+    }
     private String toStringLogout (){
         String result = "";
         try{

@@ -131,8 +131,8 @@ public class Client {
                     serverFacade.clear();
                     break;
             }
-
         }
+
     serverFacade.clear();
         //this reads from the input
 //this is the ui part
@@ -207,10 +207,10 @@ public class Client {
             return "error creating game";
         }
     }
-//    private int generateRandomNum(){
-//        Random random = new Random();
-//        return random.nextInt(1,1000000);
-//    }
+
+
+
+
     private String toStringList () throws ResponseException, AlreadyTakenException {
         String result = "games:\n";
         try{
@@ -236,12 +236,12 @@ public class Client {
             }
             }
 
-//            result = result + "games:\n";
-//            for(String gameName : gameNames){
-//                result = result + i + gameName + "\n";
-//                i++;
-//            }
-            //serverFacade.listGames(this.authToken);
+//
+
+
+
+
+
         }catch(ResponseException e){
             result = "List unavailable";
         }catch(AlreadyTakenException e){
@@ -253,14 +253,13 @@ public class Client {
         String result = "";
         if(color.equals("white") || color.equals("black")) {
             try {
-//                String[] params;
-//                if(color.equals("white")){params = new String[]{num,"WHITE"};}
-//                else{params = new String[]{num,"BLACK"};}
-////                num = num;
-//                String df = games.get(Integer.parseInt(num));
-                //Integer.parseInt(games.get(Integer.parseInt(num)))-1);
+//
+
+
+
+
+
                 JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), num);
-                //JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, color.toUpperCase(), Integer.parseInt(games.get(Integer.parseInt(num)))-1);
                 serverFacade.joinGame(joinGameRequest, authToken) ;
                 out.println("Game joined!");
                 if (color.equals("white")){out.print(getBoard());}
@@ -285,9 +284,10 @@ public class Client {
             else{
                 result = "There is nothing to observe";
             }
-//        }catch(ResponseException e){
-//            result = "asdasdf";
-//        }
+//
+
+
+
         return result;
     }
     private String toStringLogout (){

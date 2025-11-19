@@ -24,9 +24,10 @@ public class ServerFacade {//represents the server, the middleman between th ecl
     public ServerFacade(String serverUrl){
         this.serverUrl = serverUrl;
     }
-//    public ServerFacade(){
-//        this.serverUrl = "http://localhost:8080";
-//    }
+//
+
+
+
     //the point of server facade is to be able to call the javalin things and it works and
     public AuthData addUser(RegisterRequest regReq) throws ResponseException, AlreadyTakenException {
 
@@ -57,9 +58,8 @@ public class ServerFacade {//represents the server, the middleman between th ecl
     }
 
     public GameData createGame(String gameName, String authToken) throws ResponseException, AlreadyTakenException {
-//        if(!loggedIn){
-//            throw new ResponseException("not logged in and cannot create a game");
-//        }
+//
+
         var request = buildRequest("POST", "/game",new CreateGameRequest(gameName), authToken);
         var response = sendRequest(request);
         return handleResponse(response,GameData.class);
@@ -67,9 +67,9 @@ public class ServerFacade {//represents the server, the middleman between th ecl
 
 
     public HoldsListGames listGames(String authToken) throws ResponseException, AlreadyTakenException {
-//        if(!loggedIn){
-//        throw new ResponseException("not logged in and cannot complete this function");
-//        }
+//
+
+
 
         var request = buildRequest("GET", "/game",null, authToken);
         var response = sendRequest(request);

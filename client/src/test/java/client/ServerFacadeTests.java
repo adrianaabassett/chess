@@ -161,7 +161,7 @@ public class ServerFacadeTests {
     //join game pos
     @Test
     @DisplayName("joining game")
-    public void JoinGamesPositive() throws ResponseException, AlreadyTakenException {
+    public void joinGamesPositive() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
         GameData gameData = serverFacade.createGame("adfsd", authData.authToken());
@@ -173,7 +173,7 @@ public class ServerFacadeTests {
     //join game neg
     @Test
     @DisplayName("cant join game not logged in")
-    public void JoinGamesNegative() throws ResponseException, AlreadyTakenException {
+    public void joinGamesNegative() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("name","email","pass"));
         serverFacade.createGame("new", authData.authToken());
@@ -185,7 +185,7 @@ public class ServerFacadeTests {
     }
     @Test
     @DisplayName("cant join game no games")
-    public void JoinGamesNegativeTwo() throws ResponseException, AlreadyTakenException {
+    public void joinGamesNegativeTwo() throws ResponseException, AlreadyTakenException {
         serverFacade.clear();
         AuthData authData = serverFacade.addUser(new RegisterRequest("name","password","email"));
         JoinGameRequest joinGameRequest = new JoinGameRequest(authData.authToken(),"WHITE",12);

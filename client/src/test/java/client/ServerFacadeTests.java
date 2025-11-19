@@ -22,15 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServerFacadeTests {
 
     private static Server server;
-    ServerFacade serverFacade = new ServerFacade();
+    ServerFacade serverFacade = new ServerFacade("http://localhost:0");
 
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(8080);
+        var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        ServerFacade serverFacade = new ServerFacade();
-        /////  UserData userData = new Gson().fromJson(ctx.body(),UserData.class);
     }
 
     @AfterAll

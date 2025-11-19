@@ -37,7 +37,6 @@ public class Client {
 
 
     public void repl() throws ResponseException, AlreadyTakenException {
-        String input = "";
         while(hasntQuit) {
             if(signedIn){
                 out.print("\n[LOGGED_IN] >>> ");
@@ -46,10 +45,7 @@ public class Client {
                 out.print("\n[LOGGED_OUT] >>> ");
             }
             Scanner scanner = new Scanner(System.in);
-            input = scanner.nextLine();
-            //this is where I parse the input to make it readible for my code
-//            ServerFacade serverFacade = new ServerFacade(serverUrl);
-
+            String input = scanner.nextLine();
             String[] inputPieces = input.toLowerCase().split(" ");
             switch (inputPieces[0]) {
                 case "help":
@@ -114,7 +110,6 @@ public class Client {
                     out.print("please include which game you would like to observe");
                 }
                 else{  out.print(observe(inputPieces[1]));}
-
                 break;
 
             case "logout":

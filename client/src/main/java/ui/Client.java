@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Client {
     private String serverUrl;
-    ServerFacade serverFacade = new ServerFacade();
+    ServerFacade serverFacade;
 
     public Client(String serverUrl){
       serverFacade = new ServerFacade(serverUrl);

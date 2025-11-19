@@ -24,9 +24,9 @@ public class ServerFacade {//represents the server, the middleman between th ecl
     public ServerFacade(String serverUrl){
         this.serverUrl = serverUrl;
     }
-    public ServerFacade(){
-        this.serverUrl = "http://localhost:8080";
-    }
+//    public ServerFacade(){
+//        this.serverUrl = "http://localhost:8080";
+//    }
     //the point of server facade is to be able to call the javalin things and it works and
     public AuthData addUser(RegisterRequest regReq) throws ResponseException, AlreadyTakenException {
 

@@ -295,6 +295,8 @@ public class Client {
         try{
             serverFacade.logoutUser(authToken);
             signedIn = false;
+            result = "success";
+
         }catch(ResponseException e){
             result = "You cannot log out right now.";
         }catch(AlreadyTakenException e){
@@ -345,7 +347,7 @@ public class Client {
             board = board + pinkBG + topDown[rowNum];
             if(whiteSquare){whiteSquare = false;}
             else{whiteSquare = true;}
-            for(int colNum = 0; colNum <8; colNum++){
+            for(int colNum = 7; colNum >=0; colNum--){
                 if(whiteSquare){
                     board = board + whiteBG;
                     whiteSquare = false;

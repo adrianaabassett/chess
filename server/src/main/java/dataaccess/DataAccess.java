@@ -1,5 +1,5 @@
 package dataaccess;
-import dataaccess.exceptions.DataAccessException;
+import exceptions.DataAccessException;
 import model.*;
 
 public abstract interface DataAccess {

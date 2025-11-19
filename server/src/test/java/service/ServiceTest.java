@@ -1,7 +1,7 @@
 package service;
 import chess.ChessGame;
 import dataaccess.*;
-import dataaccess.exceptions.*;
+import exceptions.*;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
-import service.Service;
 import model.UserData;
 
 import java.util.HashMap;

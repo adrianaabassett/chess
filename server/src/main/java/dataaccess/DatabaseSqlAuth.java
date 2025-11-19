@@ -1,16 +1,10 @@
 package dataaccess;
 
-import com.google.gson.Gson;
-import com.mysql.cj.x.protobuf.MysqlxCrud;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ResponseException;
+import exceptions.DataAccessException;
+import exceptions.ResponseException;
 import model.AuthData;
-import model.UserData;
 
 import java.sql.*;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class DatabaseSqlAuth implements AuthDAO {
 

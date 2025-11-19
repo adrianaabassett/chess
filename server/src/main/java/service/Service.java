@@ -3,14 +3,14 @@ import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.exceptions.*;
+import exceptions.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import recordrequests.RegisterRequest;
 import recordrequests.RegisterResult;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.UUID;
 

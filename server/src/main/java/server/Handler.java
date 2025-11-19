@@ -1,9 +1,9 @@
 package server;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
-import dataaccess.exceptions.*;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import exceptions.*;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.GameData;
@@ -16,8 +16,6 @@ import recordrequests.RegisterResult;
 import service.Service;
 
 import java.util.Map;
-
-import static java.lang.System.out;
 
 public class Handler {
     private static final Logger LOG = LoggerFactory.getLogger(Handler.class);

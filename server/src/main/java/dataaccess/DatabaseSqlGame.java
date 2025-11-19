@@ -2,17 +2,15 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ResponseException;
+import exceptions.DataAccessException;
+import exceptions.ResponseException;
 import model.GameData;
-import model.UserData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 

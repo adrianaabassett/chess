@@ -1,6 +1,9 @@
 package dataaccess;
 import chess.ChessGame;
-import dataaccess.exceptions.*;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequest;
+import exceptions.DataAccessException;
+import exceptions.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;

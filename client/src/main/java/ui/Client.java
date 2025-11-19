@@ -4,8 +4,8 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.ResponseException;
+import exceptions.AlreadyTakenException;
+import exceptions.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -164,6 +164,7 @@ public class Client {
             AuthData authData = serverFacade.addUser(new RegisterRequest(name,pass,email));
             authToken = authData.authToken();
             signedIn = true;
+            result = result + "success";
         }
         catch(ResponseException e){
             result = result +"unable to register";

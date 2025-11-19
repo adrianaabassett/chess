@@ -1,6 +1,6 @@
 import chess.*;
-import dataaccess.exceptions.AlreadyTakenException;
-import dataaccess.exceptions.ResponseException;
+import exceptions.AlreadyTakenException;
+import exceptions.ResponseException;
 import ui.Client;
 
 public class Main {

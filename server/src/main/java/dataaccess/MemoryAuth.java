@@ -1,7 +1,6 @@
 package dataaccess;
 
-import com.google.gson.Gson;
-import dataaccess.exceptions.DataAccessException;
+import exceptions.DataAccessException;
 import model.AuthData;
 
 import java.util.HashMap;

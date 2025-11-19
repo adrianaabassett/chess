@@ -1,10 +1,8 @@
 package server;
 import dataaccess.*;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ResponseException;
+import exceptions.DataAccessException;
+import exceptions.ResponseException;
 import io.javalin.*;
-
-import static java.lang.System.out;
 
 public class Server {
 

@@ -1,11 +1,11 @@
 package client;
 
 import com.google.gson.Gson;
-import dataaccess.exceptions.AlreadyTakenException;
+import exceptions.AlreadyTakenException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import dataaccess.exceptions.ResponseException;
+import exceptions.ResponseException;
 import recordrequests.CreateGameRequest;
 import recordrequests.HoldsListGames;
 import recordrequests.JoinGameRequest;
